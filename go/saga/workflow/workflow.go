@@ -1,4 +1,4 @@
-package main
+package workflow
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 )
 
 // CreateWorkflows Creates the workflows
-func CreateWorkflows(metadataClient client.MetadataClient) {
+func CreateWorkflows(metadataClient client.MetadataClient) (*string, error) {
 
 	// Read the JSON file contents
 	byteValue, _ := os.ReadFile("workflow/workflow.json")
@@ -19,12 +19,12 @@ func CreateWorkflows(metadataClient client.MetadataClient) {
 	if err != nil {
 		fmt.Println("Error reading workflow")
 		fmt.Println(err)
-		return
+		return nil, err
 	}
 	_, err = metadataClient.RegisterWorkflowDef(context.Background(), true, wf)
 	if err != nil {
 		fmt.Println("Error registering workflow", err)
-		return
+		return nil, err
 	}
 
 	var compensationWf model.WorkflowDef
@@ -33,18 +33,13 @@ func CreateWorkflows(metadataClient client.MetadataClient) {
 	if err != nil {
 		fmt.Println("Error reading compensation workflow definition")
 		fmt.Println(err)
-		return
+		return nil, err
 	}
 	_, err = metadataClient.RegisterWorkflowDef(context.Background(), true, compensationWf)
 	if err != nil {
 		fmt.Println("Error registering compensation workflow", err)
-		return
+		return nil, err
 	}
 
-}
-
-func main() {
-	apiClient := client.NewAPIClientFromEnv()
-	metadataClient := client.NewMetadataClient(apiClient)
-	CreateWorkflows(metadataClient)
+	return &wf.Name, nil
 }

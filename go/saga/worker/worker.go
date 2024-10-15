@@ -1,4 +1,4 @@
-package main
+package worker
 
 import (
 	"context"
@@ -11,8 +11,6 @@ import (
 	"log"
 	"math/rand"
 	"os"
-	"os/signal"
-	"syscall"
 	"time"
 )
 
@@ -166,9 +164,8 @@ func updateWorkerConfig(metadataClient client.MetadataClient) {
 	}
 }
 
-func main() {
+func RegisterAndStartWorkers(apiClient *client.APIClient) {
 
-	apiClient := client.NewAPIClientFromEnv()
 	metadataClient := client.NewMetadataClient(apiClient)
 	updateWorkerConfig(metadataClient)
 
@@ -191,10 +188,5 @@ func main() {
 	if err != nil {
 		fmt.Errorf("Error starting workers ", err.Error())
 	}
-
-	done := make(chan os.Signal, 1)
-	signal.Notify(done, syscall.SIGINT, syscall.SIGTERM)
-	fmt.Println("Blocking, press ctrl+c to continue...")
-	<-done // Will block here until user hits ctrl+c
 
 }
