@@ -1,1 +1,79 @@
 # Library of AWEsome Conductor example applications
+This code is designed to register workflows with a Conductor server. Here's a breakdown of what the code does:
+
+It imports necessary packages, including the Conductor Go SDK.
+The CreateWorkflows function:
+
+Reads workflow.json and compensation.json files.
+Unmarshals (parses) these JSON files into WorkflowDef structs.
+Registers these workflow definitions with a Conductor server using the MetadataClient.
+
+
+The main function:
+
+Creates a new API client using environment variables.
+Creates a new metadata client using this API client.
+Calls the CreateWorkflows function to register the workflows.
+To run this successfully, you need to:
+
+Ensure you have the Conductor Go SDK installed:
+go get github.com/conductor-sdk/conductor-go
+
+Set up the necessary environment variables for the Conductor server connection. Typically, these include:
+
+export CONDUCTOR_SERVER_URL= The URL of your Conductor server
+export CONDUCTOR_AUTH_KEY=
+export CONDUCTOR_AUTH_SECRET=
+
+
+Make sure workflow.json and compensation.json are present in the workflow directory and contain valid workflow definitions.
+Run the program: go run workflow/workflow.go
+
+
+This script is meant to register workflows with a Conductor server. It doesn't execute the workflows; it just defines them in the Conductor system.
+
+This file defines several worker functions for a payment processing system using the Conductor framework. Let's break down the main components and how to run it:
+
+The code defines worker functions for:
+
+Validating payment details
+Debiting an account
+Crediting an account
+Sending notifications
+
+
+It also includes a function to update worker configurations from a JSON file.
+The main function sets up and starts these workers.
+
+To run this worker:
+
+Ensure you have the Conductor Go SDK installed:
+Copygo get github.com/conductor-sdk/conductor-go
+
+Set up the necessary environment variables for the Conductor server connection as explained above.
+
+
+
+Make sure worker.json is present in the worker directory and contains valid task definitions.
+Run the program:
+go run worker/worker.go
+
+
+This will start the workers, which will then poll the Conductor server for tasks to execute.
+Important notes:
+
+The workers will continue running until you interrupt the program (e.g., with Ctrl+C).
+The validatePaymentDetails function includes some random behavior for demonstration purposes (it will sometimes return an error).
+Make sure your Conductor server is running and accessible.
+The worker functions are just placeholders and don't perform actual financial transactions. In a real system, you'd replace these with actual implementations.
+
+To run both the workflow registration (workflow.go) and the workers (worker.go):
+
+First, run the workflow registration:
+go run workflow/workflow.go
+
+Then, in a separate terminal, run the workers:
+go run worker/worker.go
+
+
+This setup allows you to register the workflows and then have workers ready to execute tasks for those workflows.
