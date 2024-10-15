@@ -1,0 +1,99 @@
+{
+  "name": "payment_transfer",
+  "description": "Workflow to handle ACH payment transfers",
+  "version": 1,
+  "tasks": [
+    {
+      "name": "validate_payment_details",
+      "taskReferenceName": "validate_payment",
+      "inputParameters": {
+        "fromAccountId": "${workflow.input.fromAccountId}",
+        "toAccountId": "${workflow.input.toAccountId}",
+        "amount": "${workflow.input.amount}"
+      },
+      "type": "SIMPLE"
+    },
+    {
+      "name": "switch",
+      "taskReferenceName": "switch_ref",
+      "inputParameters": {
+        "switchCaseValue": "${validate_payment.output.status}"
+      },
+      "type": "SWITCH",
+      "decisionCases": {
+        "false": [
+          {
+            "name": "send_notification",
+            "taskReferenceName": "send_notification_failure",
+            "inputParameters": {
+              "fromAccountId": "${workflow.input.fromAccountId}",
+              "toAccountId": "${workflow.input.toAccountId}",
+              "amount": "${workflow.input.amount}",
+              "status": "FAILED"
+            },
+            "type": "SIMPLE"
+          },
+          {
+            "name": "terminate",
+            "taskReferenceName": "terminate_ref",
+            "inputParameters": {
+              "terminationStatus": "FAILED",
+              "terminationReason": "${validate_payment.output.reason}"
+            },
+            "type": "TERMINATE"
+          }
+        ]
+      },
+      "evaluatorType": "value-param",
+      "expression": "switchCaseValue"
+    },
+    {
+      "name": "debit_account",
+      "taskReferenceName": "debit_account",
+      "inputParameters": {
+        "accountId": "${workflow.input.fromAccountId}",
+        "amount": "${workflow.input.amount}"
+      },
+      "type": "SIMPLE"
+    },
+    {
+      "name": "credit_account",
+      "taskReferenceName": "credit_account",
+      "inputParameters": {
+        "accountId": "${workflow.input.toAccountId}",
+        "amount": "${workflow.input.amount}"
+      },
+      "type": "SIMPLE"
+    },
+    {
+      "name": "send_notification",
+      "taskReferenceName": "send_notification",
+      "inputParameters": {
+        "fromAccountId": "${workflow.input.fromAccountId}",
+        "toAccountId": "${workflow.input.toAccountId}",
+        "amount": "${workflow.input.amount}",
+        "status": "COMPLETED"
+      },
+      "type": "SIMPLE"
+    }
+  ],
+  "inputParameters": [
+    "paymentDetails",
+    "fromAccountId",
+    "toAccountId",
+    "amount"
+  ],
+  "outputParameters": {
+    "paymentStatus": "COMPLETED"
+  },
+  "failureWorkflow": "ach_payment_transfer_failed",
+  "schemaVersion": 2,
+  "restartable": true,
+  "workflowStatusListenerEnabled": false,
+  "ownerEmail": "user@example.com",
+  "timeoutPolicy": "TIME_OUT_WF",
+  "timeoutSeconds": 240,
+  "variables": {},
+  "inputTemplate": {},
+  "enforceSchema": true
+}

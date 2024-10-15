@@ -1,0 +1,19 @@
+[
+  {
+    "createTime": 0,
+    "updateTime": 0,
+    "name": "validate_payment_details",
+    "retryCount": 3,
+    "timeoutSeconds": 0,
+    "timeoutPolicy": "TIME_OUT_WF",
+    "retryLogic": "FIXED",
+    "retryDelaySeconds": 1,
+    "responseTimeoutSeconds": 3600,
+    "inputTemplate": {},
+    "rateLimitPerFrequency": 0,
+    "rateLimitFrequencyInSeconds": 1,
+    "backoffScaleFactor": 1,
+    "enforceSchema": false,
+    "ownerEmail": "user@expale.com"
+  }
+]
