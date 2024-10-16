@@ -80,19 +80,21 @@ Sending notifications
 It also includes a function to update worker configurations from a JSON file.
 The main function sets up and starts these workers.
 
-To run this worker:
+## To run this worker:
 
 Ensure you have the Conductor Go SDK installed:
-Copygo get github.com/conductor-sdk/conductor-go
-
+```shell
+go get github.com/conductor-sdk/conductor-go
+```
 Set up the necessary environment variables for the Conductor server connection as explained above.
 
 
 
 Make sure worker.json is present in the worker directory and contains valid task definitions.
 Run the program:
+```shell
 go run worker/worker.go
-
+```
 
 This will start the workers, which will then poll the Conductor server for tasks to execute.
 Important notes:
@@ -102,13 +104,15 @@ The validatePaymentDetails function includes some random behavior for demonstrat
 Make sure your Conductor server is running and accessible.
 The worker functions are just placeholders and don't perform actual financial transactions. In a real system, you'd replace these with actual implementations.
 
-To run both the workflow registration (workflow.go) and the workers (worker.go):
+## To run both the workflow registration (workflow.go) and the workers (worker.go):
 
 First, run the workflow registration:
+```shell
 go run workflow/workflow.go
-
+```
 Then, in a separate terminal, run the workers:
+```shell
 go run worker/worker.go
-
+```
 
 This setup allows you to register the workflows and then have workers ready to execute tasks for those workflows.
