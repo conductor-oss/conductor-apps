@@ -39,28 +39,27 @@ Workflow Id 04bf5581-8b2a-11ef-8c08-1e1fcef2cd2e
 2024/10/15 12:16:46 Payment of 5000 from account Account11 to Account22 has been FAILED (Reference: )
 ```
 
+## SAGA Example
 This code is designed to register workflows with a Conductor server. Here's a breakdown of what the code does:
 
 It imports necessary packages, including the Conductor Go SDK.
-The CreateWorkflows function:
 
-Reads workflow.json and compensation.json files.
-Unmarshals (parses) these JSON files into WorkflowDef structs.
-Registers these workflow definitions with a Conductor server using the MetadataClient.
+#### The CreateWorkflows function:
+
+* Reads workflow.json and compensation.json files.
+* Unmarshals (parses) these JSON files into WorkflowDef structs.
+* Registers these workflow definitions with a Conductor server using the MetadataClient.
+
+####  The main function:
+
+* Creates a new API client using environment variables.
+* Creates a new metadata client using this API client.
+* Calls the CreateWorkflows function to register the workflows.
+* To run this successfully, you need to:
 
 
-The main function:
-
-Creates a new API client using environment variables.
-Creates a new metadata client using this API client.
-Calls the CreateWorkflows function to register the workflows.
-To run this successfully, you need to:
-
-Ensure you have the Conductor Go SDK installed:
-go get github.com/conductor-sdk/conductor-go
 
 Set up the necessary environment variables as described above.
-
 
 Make sure workflow.json and compensation.json are present in the workflow directory and contain valid workflow definitions.
 Run the program: go run workflow/workflow.go
