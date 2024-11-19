@@ -23,12 +23,3 @@ export CONDUCTOR_AUTH_SECRET=<<YOUR_CONDUCTOR_AUTH_SECRET>>
 ```shell
 python workflow/workflow.py
 ```
-
-## Source code
-
-**Tools (Service worker implementing the tools used by the agent)**
-[worker/workers.py](worker/workers.py)
-
-**Main method that triggers the agent**
-[workflow/workflow.py](workflow/workflow.py)
-
