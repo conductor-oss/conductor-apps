@@ -1,5 +1,5 @@
-# Agentic Workflows with Conductor
-Automated stock trading agentic workflow with [Conductor](https://github.com/conductor-oss/conductor)
+# Agentic RAG Workflows with Conductor
+Agentic RAG with [Conductor](https://github.com/conductor-oss/conductor)
 
 ### Install requirements
 ```shell
