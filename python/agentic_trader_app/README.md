@@ -14,6 +14,9 @@ python3 workflow/workflow.py
 3. Create a new application key and secret
 
 ```shell
+
+export OPENAI_API_KEY=<<YOUR_OPENAI_KEY>>
+
 export CONDUCTOR_SERVER_URL=https://developer.orkescloud.com/api;
 export CONDUCTOR_AUTH_KEY=<<YOUR_CONDUCTOR_AUTH_KEY>>
 export CONDUCTOR_AUTH_SECRET=<<YOUR_CONDUCTOR_AUTH_SECRET>>
