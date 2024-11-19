@@ -1,6 +1,7 @@
 import json
 import logging
 import logging
+import os
 import time
 
 from conductor.client.automator.task_handler import TaskHandler
@@ -45,12 +46,13 @@ def main():
 
     workflow_id = workflow_client.start_workflow(start_workflow_request=request)
     workflow = workflow_client.get_workflow(workflow_id=workflow_id, include_tasks=False)
-    while (workflow.is_running()):
+    print(f'track the agent execution here {os.getenv("CONDUCTOR_SERVER_URL")}/../execution/{workflow.workflow_id}')
+    while workflow.is_running():
         print(f'{workflow.variables["instructions"]}')
         workflow = workflow_client.get_workflow(workflow_id=workflow_id, include_tasks=False)
         time.sleep(5)
 
-    print('Done')
+    print('Completed.  Did we make money?')
     task_handler.stop_processes()
 
 

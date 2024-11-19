@@ -3,7 +3,8 @@ from multiprocessing import Value
 
 from conductor.client.worker.worker_task import worker_task
 
-balance = Value('d', 300.0)
+# change the initial value to increase the trading loops
+balance = Value('d', 3000.0)
 
 
 def update_balance(balance, amount):
