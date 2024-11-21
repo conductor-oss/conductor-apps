@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <appender name="Console"
+              class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>
+                %black(%d{ISO8601}) %highlight(%-5level): %msg%n%throwable
+            </Pattern>
+        </layout>
+    </appender>
+
+
+
+    <root level="error">
+        <appender-ref ref="Console" />
+    </root>
+
+    <logger name="io.orkes.conductor.tests" level="info" additivity="false">
+        <appender-ref ref="Console" />
+    </logger>
+
+
+</configuration>

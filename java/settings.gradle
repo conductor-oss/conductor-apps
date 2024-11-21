@@ -1,0 +1,4 @@
+rootProject.name = 'conductor-java-apps'
+include 'examples'
+
+rootProject.children.each { it.name = "${rootProject.name}-${it.name}" }
