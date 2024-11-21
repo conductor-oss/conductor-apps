@@ -1,6 +1,6 @@
 package io.orkes.demo.service.controller;
 
-import io.orkes.demo.banking.service.WorkflowService;
+import io.orkes.demo.service.WorkflowService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
