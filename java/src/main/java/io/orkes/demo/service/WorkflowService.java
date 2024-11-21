@@ -1,4 +1,4 @@
-package io.orkes.demo.banking.service;
+package io.orkes.demo.service;
 
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.netflix.conductor.common.metadata.tasks.TaskResult;
@@ -18,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j

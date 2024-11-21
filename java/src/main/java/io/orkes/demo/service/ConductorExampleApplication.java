@@ -1,4 +1,4 @@
-package io.orkes.demo.banking;
+package io.orkes.demo.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.conductor.common.config.ObjectMapperProvider;

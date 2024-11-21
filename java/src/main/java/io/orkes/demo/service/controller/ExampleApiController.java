@@ -1,4 +1,4 @@
-package io.orkes.demo.banking.controller;
+package io.orkes.demo.service.controller;
 
 import io.orkes.demo.banking.service.WorkflowService;
 import lombok.AllArgsConstructor;
