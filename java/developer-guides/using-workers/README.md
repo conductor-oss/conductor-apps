@@ -9,7 +9,7 @@ To run this project:
 1) Create an account in https://developer.orkescloud.com
 2) Create an application
 3) Create an access key for the application
-3) Use that access key in `Main.java`
+4) Use that access key in `Main.java`
 
 ```java
 var client = ApiClient.builder()
