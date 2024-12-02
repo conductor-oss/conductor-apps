@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'application'
 }
 
 group 'io.orkes.conductor.examples'
@@ -21,4 +22,8 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+application {
+    mainClass.set("io.orkes.conductor.examples.Main")
 }
