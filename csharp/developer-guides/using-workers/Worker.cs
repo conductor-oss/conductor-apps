@@ -27,7 +27,7 @@ namespace example
         {
             var conf = new Configuration
             {
-                BasePath = "http://localhost:8080/api",
+                BasePath = "https://developer.orkescloud.com/api",
                 AuthenticationSettings = new OrkesAuthenticationSettings("_CHANGE_ME_", "_CHANGE_ME_")
             };
 
