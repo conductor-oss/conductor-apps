@@ -25,15 +25,15 @@ namespace example
 
         public static void Main(string[] args)
         {
-            ApiExtensions.Configuration = new Configuration
+            var conf = new Configuration
             {
-                BasePath = "https://developer.orkescloud.com/api",
+                BasePath = "http://localhost:8080/api",
                 AuthenticationSettings = new OrkesAuthenticationSettings("_CHANGE_ME_", "_CHANGE_ME_")
             };
 
             var host = WorkflowTaskHost.CreateWorkerHost(
-                ApiExtensions.Configuration,
-                LogLevel.Information
+                conf,
+                LogLevel.Debug
             );
             host.Start();
 
