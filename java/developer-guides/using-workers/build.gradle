@@ -3,17 +3,14 @@ plugins {
     id 'application'
 }
 
-group 'io.orkes.conductor.examples'
-version '1.0-SNAPSHOT'
-
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation 'org.conductoross:conductor-client:4.0.1'
-    implementation 'org.conductoross:java-sdk:4.0.1'
-    implementation 'io.orkes.conductor:orkes-conductor-client:4.0.1'
+    implementation 'org.conductoross:conductor-client:4.0.3'
+    implementation 'org.conductoross:java-sdk:4.0.3'
+    implementation 'io.orkes.conductor:orkes-conductor-client:4.0.3'
     runtimeOnly 'org.slf4j:slf4j-simple:2.0.9'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
