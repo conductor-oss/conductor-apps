@@ -4,12 +4,14 @@
             [io.orkes.metadata :as metadata])
   (:gen-class))
 
+; Sign up at https://developer.orkescloud.com and create an application.
+; Use your application's Key ID and Key Secret here:
 (def options
   {:app-key "_CHANGE_ME_"
    :app-secret "_CHANGE_ME_"
    :url "https://developer.orkescloud.com/api/"})
 
-
+; Function that creates the tasks.
 (defn create-tasks
   []
   (vector (sdk/http-task "get-user_ref" {:uri "https://randomuser.me/api/"})
@@ -20,15 +22,15 @@
                                                                "${get-user_ref.output.response.body.results[0].name.first}"})]}
                            [])))
 
+; Function that creates the workflow definition.
 (defn create-workflow
   [tasks]
   (merge (sdk/workflow "myFirstWorkflow" tasks)))
 
-(def workflow-request {:name "myFirstWorkflow"
-                       :version 1})
-
 (defn -main
   []
+  ; Register the workflow with overwrite = true
   (metadata/register-workflow-def options (-> (create-tasks) (create-workflow)) true)
-  (let [workflow-id (wr/start-workflow options workflow-request)]
-   (println "Started workflow:" workflow-id)))
+  ; Start the workflow
+  (let [workflow-id (wr/start-workflow options {:name "myFirstWorkflow" :version 1})]
+    (println "Started workflow:" workflow-id)))
