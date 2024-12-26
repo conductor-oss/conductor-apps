@@ -18,15 +18,18 @@ import java.util.concurrent.TimeoutException;
 public class WorkflowAsCode {
 
     public static void main(String[] args) {
-        // Sign up on https://developer.orkescloud.com and create an application.
-        // Use your application key id and key secret
+        // Sign up at https://developer.orkescloud.com and create an application.
+        // Use your application's Key ID and Key Secret here:
         ApiClient client = ApiClient.builder()
                 .basePath("https://developer.orkescloud.com/api")
                 .credentials("_CHANGE_ME_", "_CHANGE_ME_")
                 .build();
+
+        // A WorkflowExecutor instance is used to register and execute workflows.
         int pollingInterval = 50;
         WorkflowExecutor executor = new WorkflowExecutor(client, pollingInterval);
 
+        // Create the workflow definition.
         ConductorWorkflow<Object> workflow = new WorkflowBuilder<>(executor)
                 .name("myFirstWorkflow")
                 .version(1)

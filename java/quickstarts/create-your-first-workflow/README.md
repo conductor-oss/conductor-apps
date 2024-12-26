@@ -12,7 +12,7 @@ Take a look at the quickstart: [https://orkes.io/content/quickstarts/create-firs
 4) Use that access key in `WorkflowAsCode.java`.
 
 ```java
-var client = ApiClient.builder()
+ApiClient client = ApiClient.builder()
         .basePath("https://developer.orkescloud.com/api")
         .credentials("_CHANGE_ME_", "_CHANGE_ME_")
         .build();
