@@ -41,10 +41,10 @@ public class WorkflowAsCode {
                                 .input("user", "${get-user_ref.output.response.body.results[0].name.first}")))
                 .build();
 
-        //1. Register the workflow with overwrite = true and registerTasks = true
+        // Register the workflow with overwrite = true and registerTasks = true.
         workflow.registerWorkflow(true, true);
 
-        //2. Start the workflow
+        // Start the workflow
         String id = executor.startWorkflow(workflow.getName(), workflow.getVersion(), Map.of());
         System.out.printf("Started workflow %s%n", id);
         // Alternatively, call execute which will return once the workflow reaches a terminal state
