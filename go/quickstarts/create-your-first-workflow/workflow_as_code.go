@@ -11,8 +11,8 @@ import (
 	"github.com/conductor-sdk/conductor-go/sdk/workflow/executor"
 )
 
-// Sign up on https://developer.orkescloud.com and create an application.
-// Use your application key id and key secret
+// Sign up at https://developer.orkescloud.com and create an application.
+// Use your application's Key ID and Key Secret here:
 const SERVER_URL = "https://developer.orkescloud.com/api"
 const KEY_ID = "_CHANGE_ME_"
 const SECRET = "_CHANGE_ME_"
@@ -21,11 +21,12 @@ var (
 	apiClient = client.NewAPIClient(
 		settings.NewAuthenticationSettings(KEY_ID, SECRET),
 		settings.NewHttpSettings(SERVER_URL))
+	// A WorkflowExecutor instance is used to register and execute workflows.
 	workflowExecutor = executor.NewWorkflowExecutor(apiClient)
 )
 
 func main() {
-	// Create and register the workflow definition
+	// Create the workflow definition.
 	wf := workflow.NewConductorWorkflow(workflowExecutor).
 		Name("myFirstWorkflowGo").
 		Version(1).
@@ -37,13 +38,15 @@ func main() {
 
 	wf.Add(httpTask)
 	wf.Add(switchTask)
+
+	// Register the workflow with overwrite = true.
 	err := wf.Register(true)
 	if err != nil {
 		log.Fatalf("Failed to register workflow: %v", err)
 	}
 	fmt.Printf("Registered workflow: %s\n", wf.GetName())
 
-	// Start the workflow
+	// Start the workflow.
 	id, err := workflowExecutor.StartWorkflow(&model.StartWorkflowRequest{
 		Name:    wf.GetName(),
 		Version: wf.GetVersion(),
