@@ -1,0 +1,9 @@
+{
+  "name": "worker-example",
+  "version": "1.0.0",
+  "main": "worker.js",
+  "type": "module",
+  "dependencies": {
+    "@io-orkes/conductor-javascript": "^2.1.3"
+  }
+}
