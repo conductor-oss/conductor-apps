@@ -18,10 +18,11 @@ import java.util.concurrent.TimeoutException;
 public class WorkflowAsCode {
 
     public static void main(String[] args) {
-        // Sign up at https://developer.orkescloud.com and create an application.
-        // Use your application's Key ID and Key Secret here:
+        // Set up an application in your Orkes Conductor cluster. Sign up for a Developer Edition account at https://developer.orkescloud.com.
+        // - Set your cluster's API URL as basePath (e.g., "https://developer.orkescloud.com/api" for Developer Edition).
+        // - Use the application's Key ID and Secret here.
         ApiClient client = ApiClient.builder()
-                .basePath("https://developer.orkescloud.com/api")
+                .basePath("_CHANGE_ME_")
                 .credentials("_CHANGE_ME_", "_CHANGE_ME_")
                 .build();
 
