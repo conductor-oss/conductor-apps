@@ -6,10 +6,11 @@ import {
   switchTask,
 } from "@io-orkes/conductor-javascript";
 
-// Sign up at https://developer.orkescloud.com and create an application.
-// Use your application's Key ID and Key Secret here:
+// Set up an application in your Orkes Conductor cluster. Sign up for a Developer Edition account at https://developer.orkescloud.com. 
+// - Set your cluster's API URL as the serverUrl (e.g., "https://developer.orkescloud.com/api" for Developer Edition).
+// - Use the application's Key ID and Secret here.
 const config = {
-  serverUrl: "https://developer.orkescloud.com/api",
+  serverUrl: "_CHANGE_ME_",
   keyId: "_CHANGE_ME_",
   keySecret: "_CHANGE_ME_",
 };
