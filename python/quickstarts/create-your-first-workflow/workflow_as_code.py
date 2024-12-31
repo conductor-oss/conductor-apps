@@ -9,9 +9,10 @@ from conductor.client.workflow.task.switch_task import SwitchTask
 
 
 def main():
-    # Sign up at https://developer.orkescloud.com and create an application.
-    # Use your application's Key ID and Key Secret here:
-    conf = Configuration(base_url='https://developer.orkescloud.com',
+    # Set up an application in your Orkes Conductor cluster. Sign up for a Developer Edition account at https://developer.orkescloud.com. 
+    # - Set your cluster's URL as base_url (e.g., "https://developer.orkescloud.com" for Developer Edition).
+    # - Use the application's Key ID and Secret here.
+    conf = Configuration(base_url='_CHANGE_ME_',
                          authentication_settings=AuthenticationSettings(key_id='_CHANGE_ME_',
                                                                         key_secret='_CHANGE_ME_'))
 

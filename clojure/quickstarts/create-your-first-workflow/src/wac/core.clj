@@ -4,12 +4,13 @@
             [io.orkes.metadata :as metadata])
   (:gen-class))
 
-; Sign up at https://developer.orkescloud.com and create an application.
-; Use your application's Key ID and Key Secret here:
+; Set up an application in your Orkes Conductor cluster. Sign up for a Developer Edition account at https://developer.orkescloud.com.
+; - Set your cluster's API URL as url (e.g., "https://developer.orkescloud.com/api/" for Developer Edition).
+; - Use the application's Key ID and Secret here.
 (def options
-  {:app-key "_CHANGE_ME_"
-   :app-secret "_CHANGE_ME_"
-   :url "https://developer.orkescloud.com/api/"})
+  {:url "_CHANGE_ME_"
+   :app-key "_CHANGE_ME_"
+   :app-secret "_CHANGE_ME_"})
 
 ; Function that creates the tasks.
 (defn create-tasks
