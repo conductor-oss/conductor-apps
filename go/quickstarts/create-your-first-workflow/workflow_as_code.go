@@ -11,9 +11,10 @@ import (
 	"github.com/conductor-sdk/conductor-go/sdk/workflow/executor"
 )
 
-// Sign up at https://developer.orkescloud.com and create an application.
-// Use your application's Key ID and Key Secret here:
-const SERVER_URL = "https://developer.orkescloud.com/api"
+// Set up an application in your Orkes Conductor cluster. Sign up for a Developer Edition account at https://developer.orkescloud.com.
+// - Use the application's Key ID and Secret here.
+// - Set your cluster's API URL as the SERVER_URL (e.g., "https://developer.orkescloud.com/api" for Developer Edition).
+const SERVER_URL = "_CHANGE_ME_"
 const KEY_ID = "_CHANGE_ME_"
 const SECRET = "_CHANGE_ME_"
 
