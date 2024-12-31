@@ -5,9 +5,9 @@ using Conductor.Definition;
 using Conductor.Executor;
 using Conductor.Definition.TaskType;
 
-
-// Sign up at https://developer.orkescloud.com and create an application.
-// Use your application's Key ID and Key Secret here:
+// Set up an application in your Orkes Conductor cluster. Sign up for a Developer Edition account at https://developer.orkescloud.com. 
+// - Set your cluster's API URL as the BasePath (e.g., "https://developer.orkescloud.com/api" for Developer Edition).
+// - Use the application's Key ID and Secret here.
 var conf = new Configuration
 {
     BasePath = "https://developer.orkescloud.com/api",
@@ -18,7 +18,7 @@ var conf = new Configuration
 var executor = new WorkflowExecutor(conf);
 
 // Create the workflow definition.
-var worfklow = new ConductorWorkflow()
+var workflow = new ConductorWorkflow()
         .WithName("myFirstWorkflow")
         .WithDescription("Workflow that greets a user. Uses a Switch task, HTTP task, and Simple task.")
         .WithVersion(1)
@@ -29,10 +29,10 @@ var worfklow = new ConductorWorkflow()
 
 // Register the workflow with overwrite = true.
 executor.RegisterWorkflow(
-    workflow: worfklow,
+    workflow: workflow,
     overwrite: true
 );
 
 // Start the workflow.
-var workflowId = executor.StartWorkflow(new StartWorkflowRequest(name: worfklow.Name, version: worfklow.Version));
+var workflowId = executor.StartWorkflow(new StartWorkflowRequest(name: workflow.Name, version: workflow.Version));
 Console.WriteLine($"Started Workflow: {workflowId}");
