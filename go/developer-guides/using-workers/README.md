@@ -1,3 +1,3 @@
-# Using workers - Go Example
+# Go - Workers sample
 
-This is the sample Go project used in [https://orkes.io/content/developer-guides/using-workers](https://orkes.io/content/developer-guides/using-workers).
+This contains the sample Go project code referenced in the [Orkes Dev Docs](https://orkes.io/content/developer-guides/using-workers).
