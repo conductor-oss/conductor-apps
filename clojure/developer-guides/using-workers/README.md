@@ -1,3 +1,3 @@
-# Using workers - Clojure Example
+# Clojure - Workers sample
 
-This is the sample Clojure project used in [https://orkes.io/content/developer-guides/using-workers](https://orkes.io/content/developer-guides/using-workers).
+This contains the sample Clojure project code referenced in the [Orkes Dev Docs](https://orkes.io/content/developer-guides/using-workers).
