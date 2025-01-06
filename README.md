@@ -3,9 +3,9 @@ This repository showcases sample applications built using Orkes Conductor, a pow
 
 ## Sample applications
 * [Payment processing SAGA with Conductor and Go](https://github.com/conductor-oss/conductor-apps/tree/main/go/saga)
-* [How to rate limit workflow executions with Conductor](https://github.com/conductor-oss/conductor-apps/java/rate_limit_application)
-* [Workflow example showing various timeout scenarios with Conductor](https://github.com/conductor-oss/conductor-apps/java/timeouts_application)
-* [Agentic stock trading app with Conductor and Python](https://github.com/conductor-oss/conductor-apps/python/agentic_trader_app)
+* [How to rate limit workflow executions with Conductor](https://github.com/conductor-oss/conductor-apps/tree/main/java/rate_limit_application)
+* [Workflow example showing various timeout scenarios with Conductor](https://github.com/conductor-oss/conductor-apps/tree/main/java/timeouts_application)
+* [Agentic stock trading app with Conductor and Python](https://github.com/conductor-oss/conductor-apps/tree/main/python/agentic_trader_app)
 
 ## Language-specific Worker and Workflow sample projects
 * [Clojure](https://github.com/conductor-oss/conductor-apps/clojure)
