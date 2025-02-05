@@ -17,9 +17,9 @@
   []
   (vector (sdk/http-task "get-user_ref" {:uri "https://randomuser.me/api/"})
           (sdk/switch-task "user-criteria_ref" "${get-user_ref.output.response.body.results[0].location.country}"
-                           {"United States" [(sdk/simple-task "simple_ref"
-                                                              "helloWorld"
-                                                              {"user"
+                           {"United States" [(sdk/simple-task "myTask_ref"
+                                                              "myTask"
+                                                              {"name"
                                                                "${get-user_ref.output.response.body.results[0].name.first}"})]}
                            [])))
 
