@@ -19,7 +19,7 @@ var executor = new WorkflowExecutor(conf);
 
 // Create the workflow definition.
 var workflow = new ConductorWorkflow()
-        .WithName("myFirstWorkflow")
+        .WithName("helloWorld")
         .WithDescription("Hello World workflow that greets a user. Uses a Switch task, HTTP task, and Simple task.")
         .WithVersion(1)
         .WithTask(new HttpTask("get-user_ref", new HttpTaskSettings { uri = "https://randomuser.me/api/" }))

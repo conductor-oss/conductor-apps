@@ -32,7 +32,7 @@ public class WorkflowAsCode {
 
         // Create the workflow definition.
         ConductorWorkflow<Object> workflow = new WorkflowBuilder<>(executor)
-                .name("myFirstWorkflow")
+                .name("helloWorld")
                 .version(1)
                 .description("Hello World workflow that greets a user. Uses a Switch task, HTTP task, and Simple task.")
                 .add(new Http("get-user_ref").url("https://randomuser.me/api/"))

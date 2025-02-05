@@ -26,12 +26,12 @@
 ; Function that creates the workflow definition.
 (defn create-workflow
   [tasks]
-  (merge (sdk/workflow "myFirstWorkflow" tasks)))
+  (merge (sdk/workflow "helloWorld" tasks)))
 
 (defn -main
   []
   ; Register the workflow with overwrite = true
   (metadata/register-workflow-def options (-> (create-tasks) (create-workflow)) true)
   ; Start the workflow
-  (let [workflow-id (wr/start-workflow options {:name "myFirstWorkflow" :version 1})]
+  (let [workflow-id (wr/start-workflow options {:name "helloWorld" :version 1})]
     (println "Started workflow:" workflow-id)))

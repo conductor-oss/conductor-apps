@@ -22,7 +22,7 @@ def main():
     # Create the workflow definition.
     workflow = ConductorWorkflow(
         executor=executor,
-        name='myFirstWorkflow',
+        name='helloWorld',
         description='Hello World workflow that greets a user. Uses a Switch task, HTTP task, and Simple task.',
         version=1
     )
@@ -43,7 +43,7 @@ def main():
 
     # Start the workflow.
     request = StartWorkflowRequest()
-    request.name = 'myFirstWorkflow'
+    request.name = 'helloWorld'
     request.version = 1
     id = executor.start_workflow(request)
     print(f"Started workflow {id}")

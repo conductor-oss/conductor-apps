@@ -29,7 +29,7 @@ var (
 func main() {
 	// Create the workflow definition.
 	wf := workflow.NewConductorWorkflow(workflowExecutor).
-		Name("myFirstWorkflowGo").
+		Name("helloWorld").
 		Version(1).
 		Description("Hello World workflow that greets a user. Uses a Switch task, HTTP task, and Simple task.")
 

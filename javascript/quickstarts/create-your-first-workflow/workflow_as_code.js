@@ -21,7 +21,7 @@ const executor = new WorkflowExecutor(client);
 
 // Create the workflow definition.
 const wf = {
-  name: "myFirstWorkflow",
+  name: "helloWorld",
   version: 1,
   description:
     "Hello World workflow that greets a user. Uses a Switch task, HTTP task, and Simple task.",
