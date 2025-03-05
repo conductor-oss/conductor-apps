@@ -9,7 +9,7 @@ from conductor.client.configuration.configuration import Configuration
 from conductor.client.http.models import StartWorkflowRequest
 from conductor.client.metadata_client import MetadataClient
 from conductor.client.orkes_clients import OrkesClients
-# from worker.store_interview_transcript import configure_integrations
+from worker.workers import *
 
 os.environ['CONDUCTOR_SERVER_URL'] = 'https://pg-qa.orkesconductor.com/api'
 os.environ['CONDUCTOR_AUTH_KEY'] = 'c16e0eba-f60d-11ef-8e08-220acc00a260'

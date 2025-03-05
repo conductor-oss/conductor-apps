@@ -13,11 +13,11 @@ import io
 
 from datetime import datetime
 
-'''
+
 os.environ['CONDUCTOR_SERVER_URL'] = 'https://pg-qa.orkesconductor.com/api'
 os.environ['CONDUCTOR_AUTH_KEY'] = 'c16e0eba-f60d-11ef-8e08-220acc00a260'
 os.environ['CONDUCTOR_AUTH_SECRET'] = 'RyIa1g0MdNRNfWfzbwtDFzq1czIfGLYF61M0Bd4ezezbR9gv'
-'''
+
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ["https://www.googleapis.com/auth/drive", "https://www.googleapis.com/auth/documents"]
@@ -215,6 +215,7 @@ def storeInterviewTranscript(messages: str, name: str):
         apply_google_docs_formatting(doc_id, formatted_text)
 
     return f'These are the formatted interview messages: {formatted_text}'
+
 
 '''
 api_config = Configuration()
