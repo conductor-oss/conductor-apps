@@ -11,9 +11,12 @@ from conductor.client.metadata_client import MetadataClient
 from conductor.client.orkes_clients import OrkesClients
 from worker.workers import *
 
-os.environ['CONDUCTOR_SERVER_URL'] = 'https://pg-qa.orkesconductor.com/api'
-os.environ['CONDUCTOR_AUTH_KEY'] = 'c16e0eba-f60d-11ef-8e08-220acc00a260'
-os.environ['CONDUCTOR_AUTH_SECRET'] = 'RyIa1g0MdNRNfWfzbwtDFzq1czIfGLYF61M0Bd4ezezbR9gv'
+os.environ['CONDUCTOR_SERVER_URL'] = 'FILL IN HERE'
+os.environ['CONDUCTOR_AUTH_KEY'] = 'FILL IN HERE'
+os.environ['CONDUCTOR_AUTH_SECRET'] = 'FILL IN HERE'
+
+# Define task_handler as a global variable
+task_handler = None
 
 def start_workers(api_config):
     task_handler = TaskHandler(
@@ -29,6 +32,11 @@ def add_agentic_workflow(metadata_client: MetadataClient):
     with open('../resources/workflow.json', 'r') as file:
         data = json.load(file)
     return metadata_client.register_workflow_def(workflow_def=data, overwrite=True)
+
+def stop_workflow():
+    print('The interview process is complete.')
+    if task_handler:
+        task_handler.stop_processes()
 
 
 def main():
@@ -46,15 +54,19 @@ def main():
     request = StartWorkflowRequest(name='InterviewAgenticWorkflow', version=1)
 
     workflow_id = workflow_client.start_workflow(start_workflow_request=request)
+    os.environ['WORKFLOW_ID'] = workflow_id
     workflow = workflow_client.get_workflow(workflow_id=workflow_id, include_tasks=False)
     print(f'track the agent execution here {os.getenv("CONDUCTOR_SERVER_URL")}/../execution/{workflow.workflow_id}')
+    
+    '''
     while workflow.is_running():
-        print(f'{workflow.variables["interview_status"]}')
+        #print(f'{workflow.variables["interview_status"]}')
         workflow = workflow_client.get_workflow(workflow_id=workflow_id, include_tasks=False)
         time.sleep(5)
 
     print('The interview process is complete.')
     task_handler.stop_processes()
+    '''
 
 
 if __name__ == '__main__':

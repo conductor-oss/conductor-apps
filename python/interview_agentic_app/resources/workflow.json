@@ -1,6 +1,6 @@
 {
   "createTime": 1740768405307,
-  "updateTime": 1741052332199,
+  "updateTime": 1741385823173,
   "name": "InterviewAgenticWorkflow",
   "description": "A workflow that simulates a SWE interview process",
   "version": 1,
@@ -32,7 +32,8 @@
         "messages": [],
         "interview_status": "\"\"",
         "follow_up": "\"\"",
-        "start_time": "${get_start_time_ref.output.result}"
+        "start_time": "${get_start_time_ref.output.result}",
+        "isInitialStepDone": false
       },
       "type": "SET_VARIABLE",
       "decisionCases": {},
@@ -48,22 +49,14 @@
       "permissive": false
     },
     {
-      "name": "interview_initial_question",
-      "taskReferenceName": "interview_initial_question_ref",
+      "name": "welcome_message",
+      "taskReferenceName": "welcome_message_ref",
       "inputParameters": {
-        "__humanTaskDefinition": {
-          "assignmentCompletionStrategy": "LEAVE_OPEN",
-          "assignments": [],
-          "userFormTemplate": {
-            "name": "InterviewInitialQuestion",
-            "version": 1
-          },
-          "displayName": "Intro Question"
-        },
-        "name": "${workflow.input.name}",
-        "language": "${workflow.input.lang}"
+        "expression": "(function () {\n  return $.messages.concat({ \n    role: \"assistant\", \n    message: \"Welcome to the Software Engineer interview at Orkes! Please state your name and preferred programming language below.\", \n    timestamp: new Date().toISOString() \n  });\n})();",
+        "evaluatorType": "graaljs",
+        "messages": "${workflow.variables.messages}"
       },
-      "type": "HUMAN",
+      "type": "INLINE",
       "decisionCases": {},
       "defaultCase": [],
       "forkTasks": [],
@@ -77,16 +70,163 @@
       "permissive": false
     },
     {
-      "name": "concatenate_intro_line",
-      "taskReferenceName": "concatenate_intro_line_ref",
+      "name": "set_variable_10",
+      "taskReferenceName": "set_variable_ref_10",
       "inputParameters": {
-        "expression": "(function () {\n  return $.messages.concat({ \n    role: \"assistant\", \n    message: \"Welcome \" + $.name + \" to the Software Engineer interview at Orkes! \" + \"Today we will be conducting the interview in \" + $.language + \". We will begin with the question.\", \n    timestamp: new Date().toISOString() \n  });\n})();",
+        "messages": "${welcome_message_ref.output.result}"
+      },
+      "type": "SET_VARIABLE",
+      "decisionCases": {},
+      "defaultCase": [],
+      "forkTasks": [],
+      "startDelay": 0,
+      "joinOn": [],
+      "optional": false,
+      "defaultExclusiveJoinTask": [],
+      "asyncComplete": false,
+      "loopOver": [],
+      "onStateChange": {},
+      "permissive": false
+    },
+    {
+      "name": "do_while_1",
+      "taskReferenceName": "do_while_ref_1",
+      "inputParameters": {
+        "isInitialStepDone": "${workflow.variables.isInitialStepDone}"
+      },
+      "type": "DO_WHILE",
+      "decisionCases": {},
+      "defaultCase": [],
+      "forkTasks": [],
+      "startDelay": 0,
+      "joinOn": [],
+      "optional": false,
+      "defaultExclusiveJoinTask": [],
+      "asyncComplete": false,
+      "loopCondition": "(function () {\n  return !$.isInitialStepDone;\n})();",
+      "loopOver": [
+        {
+          "name": "initial_response",
+          "taskReferenceName": "initial_response_ref",
+          "inputParameters": {},
+          "type": "WAIT",
+          "decisionCases": {},
+          "defaultCase": [],
+          "forkTasks": [],
+          "startDelay": 0,
+          "joinOn": [],
+          "optional": false,
+          "defaultExclusiveJoinTask": [],
+          "asyncComplete": false,
+          "loopOver": [],
+          "onStateChange": {},
+          "permissive": false
+        },
+        {
+          "name": "name_question_evaluator",
+          "taskReferenceName": "name_question_evaluator_ref",
+          "inputParameters": {
+            "llmProvider": "openai-orkes-karl",
+            "model": "gpt-4o-mini",
+            "promptName": "name_question_evaluator",
+            "promptVariables": {
+              "response": "${initial_response_ref.output.result.response}"
+            }
+          },
+          "type": "LLM_TEXT_COMPLETE",
+          "decisionCases": {},
+          "defaultCase": [],
+          "forkTasks": [],
+          "startDelay": 0,
+          "joinOn": [],
+          "optional": false,
+          "defaultExclusiveJoinTask": [],
+          "asyncComplete": false,
+          "loopOver": [],
+          "onStateChange": {},
+          "permissive": false
+        },
+        {
+          "name": "concatenate_name_lang_msg",
+          "taskReferenceName": "concatenate_name_lang_msg_ref",
+          "inputParameters": {
+            "expression": "(function () {\n  return {\n    messages: [\n      ...($.messages || []),\n      {\n        role: \"user\",\n        message: $.initialResponse,\n        timestamp: new Date().toISOString()\n      },\n      ...(!$.isInitialStepDone ? [{\n        role: \"assistant\",\n        message: \"You are missing your name or programming language. Please provide both to proceed.\",\n        timestamp: new Date().toISOString()\n      }] : [])\n    ]\n  };\n})();\n",
+            "evaluatorType": "graaljs",
+            "messages": "${workflow.variables.messages}",
+            "initialResponse": "${initial_response_ref.output.result.response}",
+            "isInitialStepDone": "${name_question_evaluator_ref.output.result.isInitialStepDone}"
+          },
+          "type": "INLINE",
+          "decisionCases": {},
+          "defaultCase": [],
+          "forkTasks": [],
+          "startDelay": 0,
+          "joinOn": [],
+          "optional": false,
+          "defaultExclusiveJoinTask": [],
+          "asyncComplete": false,
+          "loopOver": [],
+          "onStateChange": {},
+          "permissive": false
+        },
+        {
+          "name": "set_variable_8",
+          "taskReferenceName": "set_variable_ref_8",
+          "inputParameters": {
+            "isInitialStepDone": "${name_question_evaluator_ref.output.result.isInitialStepDone}",
+            "name": "${name_question_evaluator_ref.output.result.name}",
+            "language": "${name_question_evaluator_ref.output.result.language}",
+            "messages": "${concatenate_name_lang_msg_ref.output.result.messages}"
+          },
+          "type": "SET_VARIABLE",
+          "decisionCases": {},
+          "defaultCase": [],
+          "forkTasks": [],
+          "startDelay": 0,
+          "joinOn": [],
+          "optional": false,
+          "defaultExclusiveJoinTask": [],
+          "asyncComplete": false,
+          "loopOver": [],
+          "onStateChange": {},
+          "permissive": false
+        }
+      ],
+      "evaluatorType": "graaljs",
+      "onStateChange": {},
+      "permissive": false
+    },
+    {
+      "name": "concatenate_initial_step_msg",
+      "taskReferenceName": "concatenate_initial_step_msg_ref",
+      "inputParameters": {
+        "expression": "(function () {\n  return {\n    messages: [\n      ...($.messages || []),\n      {\n        role: \"assistant\", \n        message: \"Thank you \" + $.name + \"! We will conduct this interview in \" + $.language + \". We will begin with the coding question.\", \n        timestamp: new Date().toISOString() \n      }\n    ]\n  };\n})();\n",
         "evaluatorType": "graaljs",
+        "name": "${workflow.variables.name}",
+        "language": "${workflow.variables.language}",
         "messages": "${workflow.variables.messages}",
-        "name": "${interview_initial_question_ref.output.name}",
-        "language": "${interview_initial_question_ref.output.language}"
+        "initialResponse": "${initial_response_ref.output.result.response}"
       },
       "type": "INLINE",
+      "decisionCases": {},
+      "defaultCase": [],
+      "forkTasks": [],
+      "startDelay": 0,
+      "joinOn": [],
+      "optional": false,
+      "defaultExclusiveJoinTask": [],
+      "asyncComplete": false,
+      "loopOver": [],
+      "onStateChange": {},
+      "permissive": false
+    },
+    {
+      "name": "set_variable_9",
+      "taskReferenceName": "set_variable_ref_9",
+      "inputParameters": {
+        "messages": "${concatenate_initial_step_msg_ref.output.result.messages}"
+      },
+      "type": "SET_VARIABLE",
       "decisionCases": {},
       "defaultCase": [],
       "forkTasks": [],
@@ -107,8 +247,8 @@
         "model": "gpt-4o-mini",
         "promptName": "interview_question_generator",
         "promptVariables": {
-          "name": "${interview_initial_question_ref.output.name}",
-          "language": "${interview_initial_question_ref.output.language}"
+          "name": "${workflow.variables.name}",
+          "language": "${workflow.variables.language}"
         }
       },
       "type": "LLM_TEXT_COMPLETE",
@@ -130,7 +270,7 @@
       "inputParameters": {
         "expression": "(function () {\n  return {\n    messages: [\n      ...($.messages || []),\n      {\n        role: \"assistant\",\n        message: $.question,\n        timestamp: new Date().toISOString()\n      }\n    ]\n  };\n})();\n",
         "evaluatorType": "graaljs",
-        "messages": "${concatenate_intro_line_ref.output.result}",
+        "messages": "${workflow.variables.messages}",
         "question": "${question_generator_ref.output.result}"
       },
       "type": "INLINE",
@@ -169,7 +309,7 @@
       "name": "do_while",
       "taskReferenceName": "do_while_ref",
       "inputParameters": {
-        "response": "${interviewee_response_ref.output}",
+        "response": "${interviewee_response_ref.output.result.response}",
         "interview_status": "${workflow.variables.interview_status}",
         "start_time": "${get_start_time_ref.output.result}"
       },
@@ -211,7 +351,7 @@
             "expression": "(function () {\n  return {\n    messages: [\n      ...($.messages || []),\n      {\n        role: \"user\",\n        message: $.intervieweeResponse,\n        timestamp: new Date().toISOString()\n      }\n    ]\n  };\n})();\n",
             "evaluatorType": "graaljs",
             "messages": "${workflow.variables.messages}",
-            "intervieweeResponse": "${interviewee_response_ref.output.response}"
+            "intervieweeResponse": "${interviewee_response_ref.output.result.response}"
           },
           "type": "INLINE",
           "decisionCases": {},
@@ -254,9 +394,9 @@
             "instructions": "interview_response_evaluator",
             "promptVariables": {
               "question": "${question_generator_ref.output.result}",
-              "response": "${interviewee_response_ref.output.response}",
-              "name": "${interview_initial_question_ref.output.name}",
-              "language": "${interview_initial_question_ref.output.language}",
+              "response": "${interviewee_response_ref.output.result.response}",
+              "name": "${workflow.variables.name}",
+              "language": "${workflow.variables.language}",
               "follow_up": "${workflow.variables.follow_up}"
             },
             "messages": "${workflow.variables.messages}"
@@ -309,7 +449,7 @@
                   "expression": "(function () {\n  return {\n    messages: [\n      ...($.messages || []),\n      {\n        role: \"assistant\",\n        message: \"Congratulations, you have solved the problem successfully. The interview is now complete, thank you for your time \" + $.name + \". We will be in contact shortly.\",\n        timestamp: new Date().toISOString()\n      }\n    ]\n  };\n})();",
                   "evaluatorType": "graaljs",
                   "messages": "${workflow.variables.messages}",
-                  "name": "${interview_initial_question_ref.output.name}"
+                  "name": "${workflow.variables.name}"
                 },
                 "type": "INLINE",
                 "decisionCases": {},
@@ -354,9 +494,9 @@
                   "instructions": "interview_hint_generator",
                   "promptVariables": {
                     "question": "${question_generator_ref.output.result}",
-                    "response": "${interviewee_response_ref.output.response}",
-                    "name": "${interview_initial_question_ref.output.name}",
-                    "language": "${interview_initial_question_ref.output.language}",
+                    "response": "${interviewee_response_ref.output.result.response}",
+                    "name": "${workflow.variables.name}",
+                    "language": "${workflow.variables.language}",
                     "follow_up": "${workflow.variables.follow_up}"
                   },
                   "messages": "${workflow.variables.messages}"
@@ -427,9 +567,9 @@
                   "instructions": "interview_simplification_generator",
                   "promptVariables": {
                     "question": "${question_generator_ref.output.result}",
-                    "response": "${interviewee_response_ref.output.response}",
-                    "name": "${interview_initial_question_ref.output.name}",
-                    "language": "${interview_initial_question_ref.output.language}",
+                    "response": "${interviewee_response_ref.output.result.response}",
+                    "name": "${workflow.variables.name}",
+                    "language": "${workflow.variables.language}",
                     "follow_up": "${workflow.variables.follow_up}"
                   },
                   "messages": "${workflow.variables.messages}"
@@ -569,7 +709,7 @@
             "expression": "(function () {\n  return {\n    messages: [\n      ...($.messages || []),\n      {\n        role: \"assistant\",\n        message: \"The interview is now complete, thank you for your time \" + $.name + \". We will be in contact shortly.\",\n        timestamp: new Date().toISOString()\n      }\n    ]\n  };\n})();",
             "evaluatorType": "graaljs",
             "messages": "${workflow.variables.messages}",
-            "name": "${interview_initial_question_ref.output.name}"
+            "name": "${workflow.variables.name}"
           },
           "type": "INLINE",
           "decisionCases": {},
@@ -651,7 +791,7 @@
             "taskReferenceName": "storeInterviewTranscript_ref",
             "inputParameters": {
               "messages": "${transcript_formatter_ref.output.result}",
-              "name": "${interview_initial_question_ref.output.name}"
+              "name": "${workflow.variables.name}"
             },
             "type": "SIMPLE",
             "decisionCases": {},
@@ -676,7 +816,7 @@
               "model": "gpt-4o-mini",
               "instructions": "interview_thank_you_email_generator",
               "promptVariables": {
-                "name": "${interview_initial_question_ref.output.name}",
+                "name": "${workflow.variables.name}",
                 "messages": "${workflow.variables.messages}"
               },
               "messages": "${workflow.variables.messages}"
@@ -711,7 +851,7 @@
                   {
                     "to": [
                       {
-                        "email": "kgicetech@gmail.com"
+                        "email": "karl.goeltner@orkes.io"
                       }
                     ]
                   }
@@ -719,7 +859,7 @@
                 "from": {
                   "email": "karl.goeltner@orkes.io"
                 },
-                "subject": "Thank you ${interview_initial_question_ref.output.name} for interviewing with Orkes",
+                "subject": "Thank you ${workflow.variables.name} for interviewing with Orkes",
                 "content": [
                   {
                     "type": "text/html",
@@ -770,16 +910,13 @@
       "permissive": false
     }
   ],
-  "inputParameters": [
-    "name",
-    "lang"
-  ],
+  "inputParameters": [],
   "outputParameters": {},
   "failureWorkflow": "",
   "schemaVersion": 2,
   "restartable": true,
   "workflowStatusListenerEnabled": false,
-  "ownerEmail": "viren@orkes.io",
+  "ownerEmail": "karl.goeltner@orkes.io",
   "timeoutPolicy": "ALERT_ONLY",
   "timeoutSeconds": 0,
   "variables": {},
