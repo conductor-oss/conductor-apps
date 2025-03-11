@@ -1,0 +1,103 @@
+/* ========== General Container Styling ========== */
+.chat-container {
+  width: 90%;
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  font-family: 'Arial', sans-serif;
+}
+
+/* ========== Chatbox Styling ========== */
+.chat-box {
+  height: 600px; /* Fixed height for the chatbox */
+  overflow-y: auto;
+  padding: 10px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  position: relative; /* Prevents unintended expansion */
+}
+
+/* ========== Message Styling ========== */
+.chat-box .chat-bubble {
+  padding: 0 10px;
+  border-radius: 12px;
+  max-width: 70%;
+  margin-bottom: 10px;
+  word-wrap: break-word;
+}
+
+.chat-box .chat-bubble.user-message {
+  background-color: #007bff !important;
+  color: white !important;
+  align-self: flex-end;
+}
+
+.chat-box .chat-bubble.bot-message {
+  background-color: #e0e0e0 !important;
+  color: black !important;
+  align-self: flex-start;
+}
+
+/* Typing Indicator */
+.typing-indicator {
+  font-style: italic;
+  color: #666;
+}
+
+.chat-box .chat-bubble p {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+/* ========== Input Box Styling ========== */
+.input-box {
+  display: flex;
+  margin-top: 20px;
+  align-items: flex-start;
+  justify-content: space-between;
+  position: relative;
+  z-index: 1;
+}
+
+.input-box textarea {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  font-family: 'Arial', sans-serif;
+  resize: none; /* Disable resizing */
+  overflow: hidden; /* Prevent scrollbars */
+  min-height: 40px;
+  /* max-height: 40px; Ensure it doesn't grow */
+  height: 40px;
+  resize: 'none';
+}
+
+
+/* Placeholder Styling */
+.input-box textarea::placeholder {
+  color: #888;
+}
+
+/* ========== Button Styling ========== */
+button {
+  padding: 12px 18px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-left: 10px;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
