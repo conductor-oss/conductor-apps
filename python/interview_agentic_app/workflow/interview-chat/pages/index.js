@@ -9,6 +9,7 @@ export default function Home() {
   const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [isInterviewDone, setIsInterviewDone] = useState(false);
   const [isInitialStepDone, setIsInitialStepDone] = useState(false);
 
   const chatBoxRef = useRef(null);
@@ -25,7 +26,8 @@ export default function Home() {
       const response = await axios.get(`${API_BASE_URL}/get_welcome_message`);
       addMessage(response.data.message, 'Bot');
     } catch (error) {
-      console.error('Error starting workflow:', error);
+      addMessage("The interview has terminated unexpectedly. There was an error starting the workflow.", 'Bot');
+      setIsInterviewDone(true);
     }
   };
 
@@ -70,8 +72,15 @@ export default function Home() {
         } else {
             await processInitialStep();
         }
+
+        const interviewStatus = await axios.get(`${API_BASE_URL}/get_interview_status`);
+        if (interviewStatus.data.message == 'DONE') {
+          setIsInterviewDone(true);
+        }
     } catch (error) {
-        console.error('Error fetching bot response:', error);
+      await axios.post(`${API_BASE_URL}/stop_workflow`);
+      addMessage("The interview has terminated unexpectedly. There was an error fetching the bot's response.", 'Bot');
+      setIsInterviewDone(true);
     } finally {
         setLoading(false);
     }
@@ -80,7 +89,7 @@ export default function Home() {
   const processInitialStep = async () => {
     try {
         const response = await axios.post(`${API_BASE_URL}/send_name_language`, { userInput });
-        const initialLoopStatus = await axios.get(`${API_BASE_URL}/is_initial_step_done`);
+        const initialLoopStatus = await axios.get(`${API_BASE_URL}/get_is_initial_step_done`);
         setIsInitialStepDone(initialLoopStatus.data.message);
 
         if (initialLoopStatus.data.message) {
@@ -102,7 +111,9 @@ export default function Home() {
             addMessage(response.data.message || "Sorry, I didn't understand that.", 'Bot');
         }
     } catch (error) {
-        console.error('Error processing initial step:', error);
+      await axios.post(`${API_BASE_URL}/stop_workflow`);
+      addMessage("The interview has terminated unexpectedly. There was an error processing the initial step.", 'Bot');
+      setIsInterviewDone(true);
     }
   };
 
@@ -128,10 +139,23 @@ export default function Home() {
         ref={textareaRef}
         value={userInput}
         onChange={handleInputChange}
-        onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleSubmit())}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault(); // Prevent default enter behavior
+            handleSubmit(); // Submit the message
+          } else if (e.key === 'Enter' && e.shiftKey) {
+            e.preventDefault();
+            setUserInput((prev) => {
+              const updatedInput = prev + '\n';
+              setTimeout(() => handleInputChange({ target: { value: updatedInput } }), 0);
+              return updatedInput;
+            });
+          }
+        }}
         placeholder="Type your response..."
+        disabled={loading || isInterviewDone}
       />
-      <button onClick={handleSubmit}>Send</button>
+      <button onClick={handleSubmit} disabled={loading || isInterviewDone}>Send</button>
     </div>
   </div>
 );

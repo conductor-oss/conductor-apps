@@ -415,6 +415,27 @@
           "permissive": false
         },
         {
+          "name": "clean_evaluation_response",
+          "taskReferenceName": "clean_evaluation_response_ref",
+          "inputParameters": {
+            "expression": "(function () {\n  function cleanString(str) {\n    return str.replace(/(\\*\\*|\\*|__|_)/g, '').trim().toUpperCase();\n  }\n  \n  return cleanString($.evaluator_response);\n})();",
+            "evaluatorType": "graaljs",
+            "evaluator_response": "${evaluator_response_ref.output.result}"
+          },
+          "type": "INLINE",
+          "decisionCases": {},
+          "defaultCase": [],
+          "forkTasks": [],
+          "startDelay": 0,
+          "joinOn": [],
+          "optional": false,
+          "defaultExclusiveJoinTask": [],
+          "asyncComplete": false,
+          "loopOver": [],
+          "onStateChange": {},
+          "permissive": false
+        },
+        {
           "name": "set_variable_3",
           "taskReferenceName": "set_variable_ref_3",
           "inputParameters": {

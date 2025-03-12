@@ -14,9 +14,9 @@ import io
 from datetime import datetime
 
 
-os.environ['CONDUCTOR_SERVER_URL'] = 'FILL IN HERE'
-os.environ['CONDUCTOR_AUTH_KEY'] = 'FILL IN HERE'
-os.environ['CONDUCTOR_AUTH_SECRET'] = 'FILL IN HERE'
+os.environ['CONDUCTOR_SERVER_URL'] = 'http://localhost:5001/api'
+os.environ['CONDUCTOR_AUTH_KEY'] = 'AccessKeyId2'
+os.environ['CONDUCTOR_AUTH_SECRET'] = 'AccessKeySecret2'
 
 
 # If modifying these scopes, delete the file token.json.

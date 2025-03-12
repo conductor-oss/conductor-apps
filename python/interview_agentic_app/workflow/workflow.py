@@ -2,7 +2,6 @@ import json
 import logging
 import logging
 import os
-import time
 
 from conductor.client.automator.task_handler import TaskHandler
 from conductor.client.configuration.configuration import Configuration
@@ -11,12 +10,13 @@ from conductor.client.metadata_client import MetadataClient
 from conductor.client.orkes_clients import OrkesClients
 from worker.workers import *
 
-os.environ['CONDUCTOR_SERVER_URL'] = 'FILL IN HERE'
-os.environ['CONDUCTOR_AUTH_KEY'] = 'FILL IN HERE'
-os.environ['CONDUCTOR_AUTH_SECRET'] = 'FILL IN HERE'
+os.environ['CONDUCTOR_SERVER_URL'] = 'http://localhost:5001/api'
+os.environ['CONDUCTOR_AUTH_KEY'] = 'AccessKeyId2'
+os.environ['CONDUCTOR_AUTH_SECRET'] = 'AccessKeySecret2'
 
 # Define task_handler as a global variable
 task_handler = None
+workflow_client = None
 
 def start_workers(api_config):
     task_handler = TaskHandler(
@@ -34,12 +34,20 @@ def add_agentic_workflow(metadata_client: MetadataClient):
     return metadata_client.register_workflow_def(workflow_def=data, overwrite=True)
 
 def stop_workflow():
-    print('The interview process is complete.')
+    print('The interview has terminated unexpectedly.')
     if task_handler:
         task_handler.stop_processes()
+    if workflow_client:
+        workflow_client.terminate_workflow(os.environ['WORKFLOW_ID'])
 
+def is_workflow_running(workflow_id):
+    workflow = workflow_client.get_workflow(workflow_id=workflow_id, include_tasks=False)
+    return workflow.status == 'RUNNING'
 
 def main():
+    global workflow_client
+    global task_handler
+
     api_config = Configuration()
     api_config.apply_logging_config(level=logging.INFO)
     clients = OrkesClients(configuration=api_config)

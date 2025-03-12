@@ -29,7 +29,8 @@
   border-radius: 12px;
   max-width: 70%;
   margin-bottom: 10px;
-  word-wrap: break-word;
+  word-wrap: break-word; /* Ensures long words are broken */
+  overflow-wrap: break-word; /* Ensures long words are broken */
 }
 
 .chat-box .chat-bubble.user-message {
@@ -55,6 +56,11 @@
   margin-bottom: 10px;
 }
 
+/* Target all pre elements under .chat-box .chat-bubble */
+.chat-box .chat-bubble pre {
+  overflow: scroll;
+}
+
 /* ========== Input Box Styling ========== */
 .input-box {
   display: flex;
@@ -72,12 +78,11 @@
   border-radius: 6px;
   font-size: 16px;
   font-family: 'Arial', sans-serif;
-  resize: none; /* Disable resizing */
-  overflow: hidden; /* Prevent scrollbars */
+  resize: none; /* Prevent manual resizing */
   min-height: 40px;
-  /* max-height: 40px; Ensure it doesn't grow */
+  max-height: 150px; /* Allow growth up to this point */
   height: 40px;
-  resize: 'none';
+  overflow-y: auto; /* Enable vertical scrolling */
 }
 
 
@@ -100,4 +105,10 @@ button {
 
 button:hover {
   background-color: #0056b3;
+}
+
+button:disabled {
+  background-color: #d3d3d3; /* Light grey background */
+  color: #888; /* Grey text */
+  cursor: not-allowed; /* Change the cursor to indicate it's disabled */
 }
