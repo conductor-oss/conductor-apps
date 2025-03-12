@@ -9,6 +9,7 @@ from conductor.client.http.models import StartWorkflowRequest
 from conductor.client.metadata_client import MetadataClient
 from conductor.client.orkes_clients import OrkesClients
 from worker.workers import *
+from prompts import configure_integrations
 
 os.environ['CONDUCTOR_SERVER_URL'] = 'http://localhost:5001/api'
 os.environ['CONDUCTOR_AUTH_KEY'] = 'AccessKeyId2'
@@ -61,7 +62,9 @@ def main():
 
     task_handler = start_workers(api_config=api_config)
 
-    #configure_integrations(api_config=api_config)
+    # Configure integrations using the function from prompts.py (one-time setup)
+    configure_integrations(api_config=api_config)
+
     add_agentic_workflow(metadata_client=metadata_client)
 
     request = StartWorkflowRequest(name='InterviewAgenticWorkflow', version=1)
