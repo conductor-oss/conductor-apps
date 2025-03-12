@@ -1,7 +1,7 @@
 import time
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from workflow import main as start_workflow, stop_workflow
+from workflow import main as start_workflow, stop_workflow, stop_workers
 import os
 from conductor.client.configuration.configuration import Configuration
 from conductor.client.orkes_clients import OrkesClients
@@ -50,6 +50,17 @@ def poll_for_response(custom_message="Processing request...", extract_fn=None, m
     
     return reply_text
 
+def poll_for_final_step_done(max_wait_time=60):
+    for _ in range(max_wait_time):
+        updated_workflow = workflow_client.get_workflow(workflow_id=os.environ['WORKFLOW_ID'])
+        is_final_step_done = updated_workflow.variables.get('is_final_step_done', False)
+        if is_final_step_done:
+            print(f"Final step is done: {is_final_step_done}")
+            return True
+        time.sleep(2)
+     # interview has timed out
+    raise Exception("Failed to run final workers.")
+
 @app.route('/start_workflow', methods=['POST'])
 def start_workflow_endpoint():
     start_workflow()
@@ -58,7 +69,12 @@ def start_workflow_endpoint():
 @app.route('/stop_workflow', methods=['POST'])
 def stop_workflow_endpoint():
     stop_workflow()
-    return jsonify({"message": "Workflow started"}), 200
+    return jsonify({"message": "Workflow stopped"}), 200
+
+@app.route('/stop_workers', methods=['POST'])
+def stop_workers_endpoint():
+    stop_workers()
+    return jsonify({"message": "Workers stopped"}), 200
 
 @app.route('/get_interview_status', methods=['GET'])
 def get_interview_status():
@@ -81,7 +97,7 @@ def get_welcome_message():
 def get_is_initial_step_done():
     try:
         updated_workflow = workflow_client.get_workflow(workflow_id=os.environ['WORKFLOW_ID'])
-        is_initial_step_done = updated_workflow.variables.get('isInitialStepDone', False)
+        is_initial_step_done = updated_workflow.variables.get('is_initial_step_done', False)
         return jsonify({"message": is_initial_step_done}), 200
     except Exception as e:
         return jsonify({"message": "An error occurred", "error": str(e)}), 500
@@ -114,6 +130,14 @@ def send_user_input():
         task_client.update_task_by_ref_name(workflow_id=os.environ['WORKFLOW_ID'], task_ref_name="interviewee_response_ref", status=TaskResultStatus.COMPLETED, output={"response": data.get('userInput')})
         reply_text = poll_for_response("The interview has timed out. Please wait for the final evaluation...")
         return jsonify({"message": reply_text}), 200
+    except Exception as e:
+        return jsonify({"message": "An error occurred", "error": str(e)}), 500
+
+@app.route('/get_is_final_step_done', methods=['GET'])
+def get_is_final_step_done():
+    try:
+        is_final_step_done = poll_for_final_step_done()
+        return jsonify({"message": is_final_step_done}), 200
     except Exception as e:
         return jsonify({"message": "An error occurred", "error": str(e)}), 500
 

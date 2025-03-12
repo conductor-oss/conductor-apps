@@ -40,6 +40,11 @@ def stop_workflow():
     if workflow_client:
         workflow_client.terminate_workflow(os.environ['WORKFLOW_ID'])
 
+def stop_workers():
+    print('The interview has completed successfully.')
+    if task_handler:
+        task_handler.stop_processes()
+
 def is_workflow_running(workflow_id):
     workflow = workflow_client.get_workflow(workflow_id=workflow_id, include_tasks=False)
     return workflow.status == 'RUNNING'

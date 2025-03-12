@@ -11,6 +11,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [isInterviewDone, setIsInterviewDone] = useState(false);
   const [isInitialStepDone, setIsInitialStepDone] = useState(false);
+  const [isInterviewTerminating, setIsInterviewTerminating] = useState(false);
 
   const chatBoxRef = useRef(null);
   const textareaRef = useRef(null);
@@ -26,8 +27,7 @@ export default function Home() {
       const response = await axios.get(`${API_BASE_URL}/get_welcome_message`);
       addMessage(response.data.message, 'Bot');
     } catch (error) {
-      addMessage("The interview has terminated unexpectedly. There was an error starting the workflow.", 'Bot');
-      setIsInterviewDone(true);
+      handleError("The interview has terminated unexpectedly. There was an error starting the workflow.");
     }
   };
 
@@ -64,57 +64,69 @@ export default function Home() {
     if (textareaRef.current) textareaRef.current.style.height = '40px';
 
     try {
-        // (1) Core interview loop
-        if (isInitialStepDone) {
-            const response = await axios.post(`${API_BASE_URL}/send_user_input`, { userInput });
-            addMessage(response.data.message || "Sorry, I didn't understand that.", 'Bot');
-        // (2) Initial step (name & language)
-        } else {
-            await processInitialStep();
-        }
-
-        const interviewStatus = await axios.get(`${API_BASE_URL}/get_interview_status`);
-        if (interviewStatus.data.message == 'DONE') {
-          setIsInterviewDone(true);
-        }
+      if (isInitialStepDone) {
+        await handleCoreInterviewLoop();
+        await checkInterviewStatus();
+      } else {
+        await processInitialStep();
+      }
     } catch (error) {
-      await axios.post(`${API_BASE_URL}/stop_workflow`);
-      addMessage("The interview has terminated unexpectedly. There was an error fetching the bot's response.", 'Bot');
-      setIsInterviewDone(true);
+      handleError("The interview has terminated unexpectedly. There was an error fetching the bot's response.");
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
+  };
+
+  const handleCoreInterviewLoop = async () => {
+    const response = await axios.post(`${API_BASE_URL}/send_user_input`, { userInput });
+    addMessage(response.data.message || "Sorry, I didn't understand that.", 'Bot');
   };
 
   const processInitialStep = async () => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/send_name_language`, { userInput });
-        const initialLoopStatus = await axios.get(`${API_BASE_URL}/get_is_initial_step_done`);
-        setIsInitialStepDone(initialLoopStatus.data.message);
+      const response = await axios.post(`${API_BASE_URL}/send_name_language`, { userInput });
+      const initialLoopStatus = await axios.get(`${API_BASE_URL}/get_is_initial_step_done`);
+      setIsInitialStepDone(initialLoopStatus.data.message);
 
-        if (initialLoopStatus.data.message) {
-            // Successfully completed name & language step, get interview question
-            const startQuestionMsg = await axios.get(`${API_BASE_URL}/get_question`);
-            
-            const botMessages = startQuestionMsg.data.message.map(msg => {
-              const messageHtml = marked(msg);
-              return {
-                  id: Date.now(),
-                  message: messageHtml,
-                  senderName: 'Bot'
-              };
-            });
-
-            setMessages(prevMessages => [...prevMessages, ...botMessages]);
-        } else {
-            // Still in initial loop, respond with validation message
-            addMessage(response.data.message || "Sorry, I didn't understand that.", 'Bot');
-        }
+      if (initialLoopStatus.data.message) {
+        await getInterviewQuestion();
+      } else {
+        addMessage(response.data.message || "Sorry, I didn't understand that.", 'Bot');
+      }
     } catch (error) {
-      await axios.post(`${API_BASE_URL}/stop_workflow`);
-      addMessage("The interview has terminated unexpectedly. There was an error processing the initial step.", 'Bot');
-      setIsInterviewDone(true);
+      handleError("The interview has terminated unexpectedly. There was an error processing the initial step.");
     }
+  };
+
+  const getInterviewQuestion = async () => {
+    const startQuestionMsg = await axios.get(`${API_BASE_URL}/get_question`);
+    const botMessages = startQuestionMsg.data.message.map(msg => {
+      const messageHtml = marked(msg);
+      return {
+        id: Date.now(),
+        message: messageHtml,
+        senderName: 'Bot'
+      };
+    });
+    setMessages(prevMessages => [...prevMessages, ...botMessages]);
+  };
+
+  const checkInterviewStatus = async () => {
+    const interviewStatus = await axios.get(`${API_BASE_URL}/get_interview_status`);
+    if (interviewStatus.data.message === 'DONE') {
+      setIsInterviewTerminating(true);
+      const isFinalStepDone = await axios.get(`${API_BASE_URL}/get_is_final_step_done`);
+      if (isFinalStepDone.data.message) {
+        await axios.post(`${API_BASE_URL}/stop_workers`);
+        setIsInterviewDone(true);
+      }
+    }
+  };
+
+  const handleError = async (errorMessage) => {
+    await axios.post(`${API_BASE_URL}/stop_workflow`);
+    addMessage(errorMessage, 'Bot');
+    setIsInterviewDone(true);
   };
 
   useEffect(() => {
@@ -124,40 +136,39 @@ export default function Home() {
   }, [messages]);
 
   return (
-  <div className="chat-container">
-    <h1>Interview Chat</h1>
-    <div ref={chatBoxRef} className="chat-box">
-      {messages.map((msg, index) => (
-        <div key={index} className={`chat-bubble ${msg.senderName === 'User' ? 'user-message' : 'bot-message'}`}>
-          <div dangerouslySetInnerHTML={{ __html: msg.message }} />
-        </div>
-      ))}
-      {loading && <div className="chat-bubble bot-message typing-indicator">...</div>}
+    <div className="chat-container">
+      <h1>Interview Chat</h1>
+      <div ref={chatBoxRef} className="chat-box">
+        {messages.map((msg, index) => (
+          <div key={index} className={`chat-bubble ${msg.senderName === 'User' ? 'user-message' : 'bot-message'}`}>
+            <div dangerouslySetInnerHTML={{ __html: msg.message }} />
+          </div>
+        ))}
+        {loading && !isInterviewTerminating && <div className="chat-bubble bot-message typing-indicator">...</div>}
+      </div>
+      <div className="input-box">
+        <textarea
+          ref={textareaRef}
+          value={userInput}
+          onChange={handleInputChange}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault(); // Prevent default enter behavior
+              handleSubmit(); // Submit the message
+            } else if (e.key === 'Enter' && e.shiftKey) {
+              e.preventDefault();
+              setUserInput((prev) => {
+                const updatedInput = prev + '\n';
+                setTimeout(() => handleInputChange({ target: { value: updatedInput } }), 0);
+                return updatedInput;
+              });
+            }
+          }}
+          placeholder="Type your response..."
+          disabled={loading || isInterviewDone}
+        />
+        <button onClick={handleSubmit} disabled={loading || isInterviewDone}>Send</button>
+      </div>
     </div>
-    <div className="input-box">
-      <textarea
-        ref={textareaRef}
-        value={userInput}
-        onChange={handleInputChange}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault(); // Prevent default enter behavior
-            handleSubmit(); // Submit the message
-          } else if (e.key === 'Enter' && e.shiftKey) {
-            e.preventDefault();
-            setUserInput((prev) => {
-              const updatedInput = prev + '\n';
-              setTimeout(() => handleInputChange({ target: { value: updatedInput } }), 0);
-              return updatedInput;
-            });
-          }
-        }}
-        placeholder="Type your response..."
-        disabled={loading || isInterviewDone}
-      />
-      <button onClick={handleSubmit} disabled={loading || isInterviewDone}>Send</button>
-    </div>
-  </div>
-);
-
+  );
 }
