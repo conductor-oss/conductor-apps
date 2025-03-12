@@ -135,6 +135,12 @@ export default function Home() {
     }
   }, [messages]);
 
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  }, [!loading]);
+
   return (
     <div className="chat-container">
       <h1>Interview Chat</h1>
