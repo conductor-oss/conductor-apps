@@ -11,9 +11,9 @@ from conductor.client.orkes_clients import OrkesClients
 from worker.workers import *
 from prompts import configure_integrations
 
-os.environ['CONDUCTOR_SERVER_URL'] = 'http://localhost:5001/api'
-os.environ['CONDUCTOR_AUTH_KEY'] = 'AccessKeyId2'
-os.environ['CONDUCTOR_AUTH_SECRET'] = 'AccessKeySecret2'
+# os.environ['CONDUCTOR_SERVER_URL'] = 'http://localhost:5001/api'
+# os.environ['CONDUCTOR_AUTH_KEY'] = 'AccessKeyId2'
+# os.environ['CONDUCTOR_AUTH_SECRET'] = 'AccessKeySecret2'
 
 # Define task_handler as a global variable
 task_handler = None

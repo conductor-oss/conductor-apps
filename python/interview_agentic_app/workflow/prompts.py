@@ -3,6 +3,7 @@ from conductor.client.ai.integrations import OpenAIConfig
 from conductor.client.ai.orchestrator import AIOrchestrator
 from conductor.client.configuration.configuration import Configuration
 from conductor.client.orkes_clients import OrkesClients
+import os
 
 name_question_evaluator = """
 Given the following user input, extract the user's name and preferred programming language or frontend framework. The recognized languages and frameworks include:  
@@ -214,9 +215,11 @@ def configure_integrations(api_config: Configuration):
                               description="Generate a personalized thank you email to the interviewee.",
                               prompt_template=interview_thank_you_email_generator)
 
+    openai_api_key = os.getenv('OPENAI_API_KEY')
+    openai_config = OpenAIConfig(api_key=openai_api_key)
     ai_orchestrator.add_ai_integration('openai-orkes-karl', LLMProvider.OPEN_AI,
                                        description="Karl's Orkes' OpenAi Integration",
-                                       models=models, config=OpenAIConfig())
+                                       models=models, config=openai_config)
 
     ai_orchestrator.associate_prompt_template('name_question_evaluator', 'openai-orkes-karl', ai_models=models)
     ai_orchestrator.associate_prompt_template('interview_question_generator', 'openai-orkes-karl', ai_models=models)

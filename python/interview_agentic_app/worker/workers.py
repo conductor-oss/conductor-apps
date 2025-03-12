@@ -13,11 +13,9 @@ import io
 
 from datetime import datetime
 
-
-os.environ['CONDUCTOR_SERVER_URL'] = 'http://localhost:5001/api'
-os.environ['CONDUCTOR_AUTH_KEY'] = 'AccessKeyId2'
-os.environ['CONDUCTOR_AUTH_SECRET'] = 'AccessKeySecret2'
-
+# os.environ['CONDUCTOR_SERVER_URL'] = 'http://localhost:5001/api'
+# os.environ['CONDUCTOR_AUTH_KEY'] = 'AccessKeyId2'
+# os.environ['CONDUCTOR_AUTH_SECRET'] = 'AccessKeySecret2'
 
 # If modifying these scopes, delete the file token.json.
 SCOPES = ["https://www.googleapis.com/auth/drive", "https://www.googleapis.com/auth/documents"]
