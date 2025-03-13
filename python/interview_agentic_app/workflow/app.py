@@ -11,7 +11,7 @@ app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
 # Orkes server configuration
-ORKES_CONDUCTOR_URL = "http://localhost:5001/api"
+ORKES_CONDUCTOR_URL = os.getenv("CONDUCTOR_SERVER_URL")
 
 # Get authentication keys from environment variables
 CONDUCTOR_AUTH_KEY = os.getenv("CONDUCTOR_AUTH_KEY")
@@ -142,4 +142,5 @@ def get_is_final_step_done():
         return jsonify({"message": "An error occurred", "error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.getenv('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)
