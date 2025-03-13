@@ -134,9 +134,9 @@ async def send_user_input():
         return jsonify({"message": "An error occurred", "error": str(e)}), 500
 
 @app.route('/get_is_final_step_done', methods=['GET'])
-def get_is_final_step_done():
+async def get_is_final_step_done():
     try:
-        is_final_step_done = poll_for_final_step_done()
+        is_final_step_done = await poll_for_final_step_done()
         return jsonify({"message": is_final_step_done}), 200
     except Exception as e:
         return jsonify({"message": "An error occurred", "error": str(e)}), 500
