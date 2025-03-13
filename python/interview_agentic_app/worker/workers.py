@@ -1,4 +1,5 @@
 import json
+import sys
 from conductor.client.automator.task_handler import TaskHandler
 from conductor.client.configuration.configuration import Configuration
 from conductor.client.worker.worker_task import worker_task
@@ -45,6 +46,9 @@ def get_credentials():
             service_account_info = json.loads(os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON"))
             print("SERVICE ACCOUNT INFO")
             print(service_account_info)
+            sys.stderr.write(f"DEBUG: creds data type = {type(service_account_info)}, value = {service_account_info}\n")
+            sys.stderr.flush()
+            
             creds = service_account.Credentials.from_service_account_info(
                 service_account_info,
                 scopes=SCOPES)
