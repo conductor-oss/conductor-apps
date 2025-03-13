@@ -86,9 +86,9 @@ def get_interview_status():
         return jsonify({"message": "An error occurred", "error": str(e)}), 500
 
 @app.route('/get_welcome_message', methods=['GET'])
-def get_welcome_message():
+async def get_welcome_message():
     try:
-        reply_text = poll_for_response("The interview has timed out. Please wait for the final evaluation...")
+        reply_text = await poll_for_response("The interview has timed out. Please wait for the final evaluation...")
         return jsonify({"message": reply_text}), 200
     except Exception as e:
         return jsonify({"message": "An error occurred", "error": str(e)}), 500
@@ -103,32 +103,32 @@ def get_is_initial_step_done():
         return jsonify({"message": "An error occurred", "error": str(e)}), 500
 
 @app.route('/send_name_language', methods=['POST'])
-def send_name_language():
+async def send_name_language():
     try:
         data = request.get_json()
         task_client.update_task_by_ref_name(workflow_id=os.environ['WORKFLOW_ID'], task_ref_name="initial_response_ref", status=TaskResultStatus.COMPLETED, output={"response": data.get('userInput')})
-        reply_text = poll_for_response("The interview has timed out. Please wait for the final evaluation...")
+        reply_text = await poll_for_response("The interview has timed out. Please wait for the final evaluation...")
         return jsonify({"message": reply_text}), 200
     except Exception as e:
         return jsonify({"message": "An error occurred", "error": str(e)}), 500
 
 @app.route('/get_question', methods=['GET'])
-def get_question():
+async def get_question():
     try:        
         def extract_question(messages_list):
             return [messages_list[-2].get('message'), messages_list[-1].get('message')]
         
-        reply_text = poll_for_response("The interview has timed out. Please wait for the final evaluation...", extract_fn=extract_question)
+        reply_text = await poll_for_response("The interview has timed out. Please wait for the final evaluation...", extract_fn=extract_question)
         return jsonify({"message": reply_text}), 200
     except Exception as e:
         return jsonify({"message": "An error occurred", "error": str(e)}), 500
 
 @app.route('/send_user_input', methods=['POST'])
-def send_user_input():
+async def send_user_input():
     try:
         data = request.get_json()
         task_client.update_task_by_ref_name(workflow_id=os.environ['WORKFLOW_ID'], task_ref_name="interviewee_response_ref", status=TaskResultStatus.COMPLETED, output={"response": data.get('userInput')})
-        reply_text = poll_for_response("The interview has timed out. Please wait for the final evaluation...")
+        reply_text = await poll_for_response("The interview has timed out. Please wait for the final evaluation...")
         return jsonify({"message": reply_text}), 200
     except Exception as e:
         return jsonify({"message": "An error occurred", "error": str(e)}), 500
