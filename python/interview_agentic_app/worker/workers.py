@@ -45,6 +45,8 @@ def get_credentials():
             # Use Service Account credentials for server-to-server communication
             service_account_info = json.loads(os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON"))
             print("SERVICE ACCOUNT INFO")
+            sys.stderr.write(f"DEBUG: OG-creds data type = {type(os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON"))}, value = {os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON")}\n")
+            sys.stderr.write("=====================")
             print(service_account_info)
             sys.stderr.write(f"DEBUG: creds data type = {type(service_account_info)}, value = {service_account_info}\n")
             sys.stderr.flush()
