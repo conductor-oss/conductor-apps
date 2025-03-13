@@ -47,7 +47,7 @@ def get_credentials():
                 service_account_info,
                 scopes=SCOPES)
             with open("token.json", "w") as token:
-                token.write(creds)
+                json.dump(service_account_info, token)
     return creds
 
 def upload_text_to_drive_as_doc(text, filename):
