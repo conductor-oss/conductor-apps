@@ -23,11 +23,14 @@ export default function Home() {
 
   const startWorkflow = async () => {
     try {
+      setLoading(true);
       await axios.post(`${API_BASE_URL}/start_workflow`);
       const response = await axios.get(`${API_BASE_URL}/get_welcome_message`);
       addMessage(response.data.message, 'Bot');
     } catch (error) {
       handleError("The interview has terminated unexpectedly. There was an error starting the workflow.");
+    } finally {
+      setLoading(false);
     }
   };
 
