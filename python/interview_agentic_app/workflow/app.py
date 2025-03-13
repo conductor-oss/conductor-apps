@@ -1,4 +1,4 @@
-import time
+import asyncio
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from workflow import start_workflow, stop_workflow, stop_workers
@@ -29,7 +29,7 @@ workflow_client = orkes_clients.get_workflow_client()
 task_client = orkes_clients.get_task_client()
 prev_timestamp = [None]
 
-def poll_for_response(custom_message="Processing request...", extract_fn=None, max_wait_time=15):
+async def poll_for_response(custom_message="Processing request...", extract_fn=None, max_wait_time=15):
     reply_text = custom_message
     updated_workflow = workflow_client.get_workflow(workflow_id=os.environ['WORKFLOW_ID'])
     messages_list = updated_workflow.variables.get('messages', [])
@@ -41,7 +41,7 @@ def poll_for_response(custom_message="Processing request...", extract_fn=None, m
             reply_text = extract_fn(messages_list) if extract_fn else messages_list[-1].get('message')
             prev_timestamp[0] = curr_timestamp
             break
-        time.sleep(2)
+        await asyncio.sleep(2)
         updated_workflow = workflow_client.get_workflow(workflow_id=os.environ['WORKFLOW_ID'])
     
     # check if the interview has timed out
@@ -50,14 +50,14 @@ def poll_for_response(custom_message="Processing request...", extract_fn=None, m
     
     return reply_text
 
-def poll_for_final_step_done(max_wait_time=60):
+async def poll_for_final_step_done(max_wait_time=60):
     for _ in range(max_wait_time):
         updated_workflow = workflow_client.get_workflow(workflow_id=os.environ['WORKFLOW_ID'])
         is_final_step_done = updated_workflow.variables.get('is_final_step_done', False)
         if is_final_step_done:
             print(f"Final step is done: {is_final_step_done}")
             return True
-        time.sleep(2)
+        await asyncio.sleep(2)
      # interview has timed out
     raise Exception("Failed to run final workers.")
 
@@ -144,4 +144,5 @@ def get_is_final_step_done():
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=True)
+    # app.run(debug=True)
     print("Server running on port", port)
