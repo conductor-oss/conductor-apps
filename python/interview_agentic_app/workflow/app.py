@@ -1,7 +1,7 @@
 import time
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from workflow import main as start_workflow, stop_workflow, stop_workers
+from workflow import start_workflow, stop_workflow, stop_workers
 import os
 from conductor.client.configuration.configuration import Configuration
 from conductor.client.orkes_clients import OrkesClients

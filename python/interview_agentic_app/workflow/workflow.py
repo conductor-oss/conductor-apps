@@ -30,7 +30,7 @@ def start_workers(api_config):
 
 
 def add_agentic_workflow(metadata_client: MetadataClient):
-    with open('../resources/workflow.json', 'r') as file:
+    with open('resources/workflow.json', 'r') as file:
         data = json.load(file)
     return metadata_client.register_workflow_def(workflow_def=data, overwrite=True)
 
@@ -50,7 +50,8 @@ def is_workflow_running(workflow_id):
     workflow = workflow_client.get_workflow(workflow_id=workflow_id, include_tasks=False)
     return workflow.status == 'RUNNING'
 
-def main():
+def start_workflow():
+    print("I AM INSIDE MAIN")
     global workflow_client
     global task_handler
 
@@ -85,5 +86,5 @@ def main():
     '''
 
 
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     start_workflow()
