@@ -144,3 +144,4 @@ def get_is_final_step_done():
 if __name__ == '__main__':
     port = int(os.getenv('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=True)
+    print("Server running on port", port)

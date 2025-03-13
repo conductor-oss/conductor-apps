@@ -30,7 +30,7 @@ def start_workers(api_config):
 
 
 def add_agentic_workflow(metadata_client: MetadataClient):
-    with open('resources/workflow.json', 'r') as file:
+    with open('../resources/workflow.json', 'r') as file:
         data = json.load(file)
     return metadata_client.register_workflow_def(workflow_def=data, overwrite=True)
 
