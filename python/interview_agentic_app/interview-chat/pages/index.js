@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import { ChatFeed, Message } from 'react-chat-ui';
+import { Message } from 'react-chat-ui';
 import { marked } from 'marked';
 
 const API_BASE_URL = 'http://localhost:5000';
