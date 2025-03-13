@@ -63,7 +63,7 @@ def main():
     task_handler = start_workers(api_config=api_config)
 
     # Configure integrations using the function from prompts.py (one-time setup)
-    configure_integrations(api_config=api_config)
+    #configure_integrations(api_config=api_config)
 
     add_agentic_workflow(metadata_client=metadata_client)
 
