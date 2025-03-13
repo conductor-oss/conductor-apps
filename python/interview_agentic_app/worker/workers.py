@@ -20,7 +20,7 @@ from datetime import datetime
 # If modifying these scopes, delete the file token.json.
 SCOPES = ["https://www.googleapis.com/auth/drive", "https://www.googleapis.com/auth/documents"]
 
-def upload_text_to_drive_as_doc(text, filename):
+def get_credentials():
     creds = None
     if os.path.exists("token.json"):
         creds = Credentials.from_authorized_user_file("token.json", SCOPES)
@@ -28,10 +28,34 @@ def upload_text_to_drive_as_doc(text, filename):
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
+            client_secrets = {
+                "installed": {
+                    "client_id": os.getenv("CLIENT_ID"),
+                    "client_secret": os.getenv("CLIENT_SECRET"),
+                    "redirect_uris": [os.getenv("REDIRECT_URI")],
+                    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                    "token_uri": "https://oauth2.googleapis.com/token"
+                }
+            }
+            flow = InstalledAppFlow.from_client_config(client_secrets, SCOPES)
             creds = flow.run_local_server(port=0)
-        with open("token.json", "w") as token:
-            token.write(creds.to_json())
+            with open("token.json", "w") as token:
+                token.write(creds.to_json())
+    return creds
+
+def upload_text_to_drive_as_doc(text, filename):
+    # creds = None
+    # if os.path.exists("token.json"):
+    #     creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+    # if not creds or not creds.valid:
+    #     if creds and creds.expired and creds.refresh_token:
+    #         creds.refresh(Request())
+    #     else:
+    #         flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
+    #         creds = flow.run_local_server(port=0)
+    #     with open("token.json", "w") as token:
+    #         token.write(creds.to_json())
+    creds = get_credentials()
 
     try:
         service = build("drive", "v3", credentials=creds)
