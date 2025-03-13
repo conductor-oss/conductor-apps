@@ -43,6 +43,8 @@ def get_credentials():
             # creds = flow.run_console() #flow.run_local_server(port=0)
             # Use Service Account credentials for server-to-server communication
             service_account_info = json.loads(os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON"))
+            print("SERVICE ACCOUNT INFO")
+            print(service_account_info)
             creds = service_account.Credentials.from_service_account_info(
                 service_account_info,
                 scopes=SCOPES)
