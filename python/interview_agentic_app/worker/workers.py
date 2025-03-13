@@ -46,11 +46,12 @@ def get_credentials():
             creds = service_account.Credentials.from_service_account_info(
                 service_account_info,
                 scopes=SCOPES)
-            with open("token.json", "w") as token:
-                json.dump(service_account_info, token)
+            #print(creds.to_json())
+            #with open("token.json", "w") as token:
+            #    json.dump(creds, token)
     return creds
 
-def upload_text_to_drive_as_doc(text, filename):
+def upload_text_to_drive_as_doc(text, filename, creds):
     # creds = None
     # if os.path.exists("token.json"):
     #     creds = Credentials.from_authorized_user_file("token.json", SCOPES)
@@ -62,8 +63,6 @@ def upload_text_to_drive_as_doc(text, filename):
     #         creds = flow.run_local_server(port=0)
     #     with open("token.json", "w") as token:
     #         token.write(creds.to_json())
-    creds = get_credentials()
-
     try:
         service = build("drive", "v3", credentials=creds)
         file_metadata = {
@@ -73,14 +72,28 @@ def upload_text_to_drive_as_doc(text, filename):
         media = MediaIoBaseUpload(io.BytesIO(text.encode()), mimetype="text/plain")
         file = service.files().create(body=file_metadata, media_body=media, fields="id").execute()
         print(f"Google Doc uploaded successfully. File ID: {file.get('id')}")
+
+        # Share the file with karl.goeltner@orkes.io
+        permission = {
+            "type": "user",
+            "role": "writer",  # Can be 'reader', 'commenter', or 'writer'
+            "emailAddress": "karl.goeltner@orkes.io"
+        }
+        service.permissions().create(
+            fileId=file.get('id'),
+            body=permission,
+            fields="id"
+        ).execute()
+        print(f"File shared with karl.goeltner@orkes.io")
+
         return file.get('id')
     except Exception as error:
         print(f"An error occurred: {error}")
         return None
 
-def apply_google_docs_formatting(doc_id, formatted_text):
+def apply_google_docs_formatting(doc_id, formatted_text, creds):
     try:
-        service = build("docs", "v1", credentials=Credentials.from_authorized_user_file("token.json", SCOPES))
+        service = build("docs", "v1", credentials=creds) #Credentials.from_authorized_user_file("token.json", SCOPES))
 
         requests = []
 
@@ -237,10 +250,11 @@ def storeInterviewTranscript(messages: str, name: str):
     # Upload raw text to Google Drive (to create the document)
     current_date = datetime.today().strftime('%m/%d/%Y')
     transcript_title = f'Interview Transcript for {name}: {current_date}'
-    doc_id = upload_text_to_drive_as_doc("", transcript_title)
+    creds = get_credentials()
+    doc_id = upload_text_to_drive_as_doc("", transcript_title, creds)
 
     if doc_id:
         # Now apply formatting to the document
-        apply_google_docs_formatting(doc_id, formatted_text)
+        apply_google_docs_formatting(doc_id, formatted_text, creds)
 
     return f'These are the formatted interview messages: {formatted_text}'
