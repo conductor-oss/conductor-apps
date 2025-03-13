@@ -1,3 +1,4 @@
+import json
 from conductor.client.automator.task_handler import TaskHandler
 from conductor.client.configuration.configuration import Configuration
 from conductor.client.worker.worker_task import worker_task
@@ -9,6 +10,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseUpload
+from google.oauth2 import service_account
 import io
 
 from datetime import datetime
@@ -28,17 +30,22 @@ def get_credentials():
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            client_secrets = {
-                "installed": {
-                    "client_id": os.getenv("CLIENT_ID"),
-                    "client_secret": os.getenv("CLIENT_SECRET"),
-                    "redirect_uris": [os.getenv("REDIRECT_URI")],
-                    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-                    "token_uri": "https://oauth2.googleapis.com/token"
-                }
-            }
-            flow = InstalledAppFlow.from_client_config(client_secrets, SCOPES)
-            creds = flow.run_console() #flow.run_local_server(port=0)
+            # client_secrets = {
+            #     "installed": {
+            #         "client_id": os.getenv("CLIENT_ID"),
+            #         "client_secret": os.getenv("CLIENT_SECRET"),
+            #         "redirect_uris": [os.getenv("REDIRECT_URI")],
+            #         "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+            #         "token_uri": "https://oauth2.googleapis.com/token"
+            #     }
+            # }
+            # flow = InstalledAppFlow.from_client_config(client_secrets, SCOPES)
+            # creds = flow.run_console() #flow.run_local_server(port=0)
+            # Use Service Account credentials for server-to-server communication
+            service_account_info = json.loads(os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON"))
+            creds = service_account.Credentials.from_service_account_file(
+                service_account_info, 
+                scopes=SCOPES)
             with open("token.json", "w") as token:
                 token.write(creds.to_json())
     return creds
