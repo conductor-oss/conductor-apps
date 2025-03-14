@@ -46,7 +46,7 @@ def get_credentials():
             sys.stderr.write("SERVICE ACCOUNT INFO\n")
             sys.stderr.write(f"DEBUG: OG-creds data type = {type(os.getenv('GOOGLE_SERVICE_ACCOUNT_JSON'))}, value = {os.getenv('GOOGLE_SERVICE_ACCOUNT_JSON')}\n")
             sys.stderr.write("\n=====================\n")
-            service_account_info = json.loads(os.getenv('GOOGLE_SERVICE_ACCOUNT_JSON'))
+            service_account_info = json.loads(json.loads(os.getenv('GOOGLE_SERVICE_ACCOUNT_JSON')))
             # print(service_account_info)
             sys.stderr.write(f"DEBUG: creds data type = {type(service_account_info)}, value = {service_account_info}\n")
             sys.stderr.flush()
