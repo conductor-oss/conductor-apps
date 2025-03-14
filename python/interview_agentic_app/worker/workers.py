@@ -43,13 +43,13 @@ def get_credentials():
             # flow = InstalledAppFlow.from_client_config(client_secrets, SCOPES)
             # creds = flow.run_console() #flow.run_local_server(port=0)
             # Use Service Account credentials for server-to-server communication
-            service_account_info = json.loads(os.getenv("GOOGLE_SERVICE_ACCOUNT_JSON"))
-            print("SERVICE ACCOUNT INFO")
-            sys.stderr.write(f"DEBUG: OG-creds data type = {type(os.getenv('GOOGLE_SERVICE_ACCOUNT_JSON'))}, value = {os.getenv('GOOGLE_SERVICE_ACCOUNT_JSON')}\n")
-            sys.stderr.write("=====================")
-            print(service_account_info)
-            sys.stderr.write(f"DEBUG: creds data type = {type(service_account_info)}, value = {service_account_info}\n")
-            sys.stderr.flush()
+            service_account_info = json.loads(os.getenv('GOOGLE_SERVICE_ACCOUNT_JSON'))
+            # sys.stderr.write("SERVICE ACCOUNT INFO\n")
+            # sys.stderr.write(f"DEBUG: OG-creds data type = {type(os.getenv('GOOGLE_SERVICE_ACCOUNT_JSON'))}, value = {os.getenv('GOOGLE_SERVICE_ACCOUNT_JSON')}\n")
+            # sys.stderr.write("\n=====================\n")
+            # print(service_account_info)
+            # sys.stderr.write(f"DEBUG: creds data type = {type(service_account_info)}, value = {service_account_info}\n")
+            # sys.stderr.flush()
             
             creds = service_account.Credentials.from_service_account_info(
                 service_account_info,
