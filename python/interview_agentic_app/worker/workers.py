@@ -11,7 +11,6 @@ from googleapiclient.http import MediaIoBaseUpload
 from google.oauth2 import service_account
 import io
 
-
 from datetime import datetime
 
 # If modifying these scopes, delete the file token.json.
