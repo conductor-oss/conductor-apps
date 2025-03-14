@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
-import { ChatFeed, Message } from 'react-chat-ui';
+import { Message } from 'react-chat-ui';
 import { marked } from 'marked';
 
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = 'https://awesome-conductor-apps.onrender.com';
 
 export default function Home() {
   const [messages, setMessages] = useState([]);
@@ -23,11 +23,14 @@ export default function Home() {
 
   const startWorkflow = async () => {
     try {
+      setLoading(true);
       await axios.post(`${API_BASE_URL}/start_workflow`);
       const response = await axios.get(`${API_BASE_URL}/get_welcome_message`);
       addMessage(response.data.message, 'Bot');
     } catch (error) {
       handleError("The interview has terminated unexpectedly. There was an error starting the workflow.");
+    } finally {
+      setLoading(false);
     }
   };
 

@@ -1,7 +1,7 @@
-import time
+import asyncio
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from workflow import main as start_workflow, stop_workflow, stop_workers
+from workflow import start_workflow, stop_workflow, stop_workers
 import os
 from conductor.client.configuration.configuration import Configuration
 from conductor.client.orkes_clients import OrkesClients
@@ -11,7 +11,7 @@ app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
 # Orkes server configuration
-ORKES_CONDUCTOR_URL = "http://localhost:5001/api"
+ORKES_CONDUCTOR_URL = os.getenv("CONDUCTOR_SERVER_URL")
 
 # Get authentication keys from environment variables
 CONDUCTOR_AUTH_KEY = os.getenv("CONDUCTOR_AUTH_KEY")
@@ -29,7 +29,7 @@ workflow_client = orkes_clients.get_workflow_client()
 task_client = orkes_clients.get_task_client()
 prev_timestamp = [None]
 
-def poll_for_response(custom_message="Processing request...", extract_fn=None, max_wait_time=15):
+async def poll_for_response(custom_message="Processing request...", extract_fn=None, max_wait_time=15):
     reply_text = custom_message
     updated_workflow = workflow_client.get_workflow(workflow_id=os.environ['WORKFLOW_ID'])
     messages_list = updated_workflow.variables.get('messages', [])
@@ -41,7 +41,7 @@ def poll_for_response(custom_message="Processing request...", extract_fn=None, m
             reply_text = extract_fn(messages_list) if extract_fn else messages_list[-1].get('message')
             prev_timestamp[0] = curr_timestamp
             break
-        time.sleep(2)
+        await asyncio.sleep(2)
         updated_workflow = workflow_client.get_workflow(workflow_id=os.environ['WORKFLOW_ID'])
     
     # check if the interview has timed out
@@ -50,14 +50,14 @@ def poll_for_response(custom_message="Processing request...", extract_fn=None, m
     
     return reply_text
 
-def poll_for_final_step_done(max_wait_time=60):
+async def poll_for_final_step_done(max_wait_time=60):
     for _ in range(max_wait_time):
         updated_workflow = workflow_client.get_workflow(workflow_id=os.environ['WORKFLOW_ID'])
         is_final_step_done = updated_workflow.variables.get('is_final_step_done', False)
         if is_final_step_done:
             print(f"Final step is done: {is_final_step_done}")
             return True
-        time.sleep(2)
+        await asyncio.sleep(2)
      # interview has timed out
     raise Exception("Failed to run final workers.")
 
@@ -86,9 +86,9 @@ def get_interview_status():
         return jsonify({"message": "An error occurred", "error": str(e)}), 500
 
 @app.route('/get_welcome_message', methods=['GET'])
-def get_welcome_message():
+async def get_welcome_message():
     try:
-        reply_text = poll_for_response("The interview has timed out. Please wait for the final evaluation...")
+        reply_text = await poll_for_response("The interview has timed out. Please wait for the final evaluation...")
         return jsonify({"message": reply_text}), 200
     except Exception as e:
         return jsonify({"message": "An error occurred", "error": str(e)}), 500
@@ -103,43 +103,46 @@ def get_is_initial_step_done():
         return jsonify({"message": "An error occurred", "error": str(e)}), 500
 
 @app.route('/send_name_language', methods=['POST'])
-def send_name_language():
+async def send_name_language():
     try:
         data = request.get_json()
         task_client.update_task_by_ref_name(workflow_id=os.environ['WORKFLOW_ID'], task_ref_name="initial_response_ref", status=TaskResultStatus.COMPLETED, output={"response": data.get('userInput')})
-        reply_text = poll_for_response("The interview has timed out. Please wait for the final evaluation...")
+        reply_text = await poll_for_response("The interview has timed out. Please wait for the final evaluation...")
         return jsonify({"message": reply_text}), 200
     except Exception as e:
         return jsonify({"message": "An error occurred", "error": str(e)}), 500
 
 @app.route('/get_question', methods=['GET'])
-def get_question():
+async def get_question():
     try:        
         def extract_question(messages_list):
             return [messages_list[-2].get('message'), messages_list[-1].get('message')]
         
-        reply_text = poll_for_response("The interview has timed out. Please wait for the final evaluation...", extract_fn=extract_question)
+        reply_text = await poll_for_response("The interview has timed out. Please wait for the final evaluation...", extract_fn=extract_question)
         return jsonify({"message": reply_text}), 200
     except Exception as e:
         return jsonify({"message": "An error occurred", "error": str(e)}), 500
 
 @app.route('/send_user_input', methods=['POST'])
-def send_user_input():
+async def send_user_input():
     try:
         data = request.get_json()
         task_client.update_task_by_ref_name(workflow_id=os.environ['WORKFLOW_ID'], task_ref_name="interviewee_response_ref", status=TaskResultStatus.COMPLETED, output={"response": data.get('userInput')})
-        reply_text = poll_for_response("The interview has timed out. Please wait for the final evaluation...")
+        reply_text = await poll_for_response("The interview has timed out. Please wait for the final evaluation...")
         return jsonify({"message": reply_text}), 200
     except Exception as e:
         return jsonify({"message": "An error occurred", "error": str(e)}), 500
 
 @app.route('/get_is_final_step_done', methods=['GET'])
-def get_is_final_step_done():
+async def get_is_final_step_done():
     try:
-        is_final_step_done = poll_for_final_step_done()
+        is_final_step_done = await poll_for_final_step_done()
         return jsonify({"message": is_final_step_done}), 200
     except Exception as e:
         return jsonify({"message": "An error occurred", "error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.getenv('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)
+    # app.run(debug=True)
+    print("Server running on port", port)

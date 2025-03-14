@@ -10,14 +10,12 @@ from conductor.client.metadata_client import MetadataClient
 from conductor.client.orkes_clients import OrkesClients
 from worker.workers import *
 from prompts import configure_integrations
-
-# os.environ['CONDUCTOR_SERVER_URL'] = 'http://localhost:5001/api'
-# os.environ['CONDUCTOR_AUTH_KEY'] = 'AccessKeyId2'
-# os.environ['CONDUCTOR_AUTH_SECRET'] = 'AccessKeySecret2'
+from dotenv import load_dotenv
 
 # Define task_handler as a global variable
 task_handler = None
 workflow_client = None
+load_dotenv()
 
 def start_workers(api_config):
     task_handler = TaskHandler(
@@ -50,7 +48,7 @@ def is_workflow_running(workflow_id):
     workflow = workflow_client.get_workflow(workflow_id=workflow_id, include_tasks=False)
     return workflow.status == 'RUNNING'
 
-def main():
+def start_workflow():
     global workflow_client
     global task_handler
 
@@ -73,17 +71,3 @@ def main():
     os.environ['WORKFLOW_ID'] = workflow_id
     workflow = workflow_client.get_workflow(workflow_id=workflow_id, include_tasks=False)
     print(f'track the agent execution here {os.getenv("CONDUCTOR_SERVER_URL")}/../execution/{workflow.workflow_id}')
-    
-    '''
-    while workflow.is_running():
-        #print(f'{workflow.variables["interview_status"]}')
-        workflow = workflow_client.get_workflow(workflow_id=workflow_id, include_tasks=False)
-        time.sleep(5)
-
-    print('The interview process is complete.')
-    task_handler.stop_processes()
-    '''
-
-
-if __name__ == '__main__':
-    main()

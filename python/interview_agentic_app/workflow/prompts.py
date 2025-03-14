@@ -22,6 +22,8 @@ Ensure the name's first letters are capitalized.
 If either the name or the programming language/framework is missing or unrecognized, return:  
 {"is_initial_step_done": false, "name": null, "language": null}
 
+**Important:** Do not wrap the output in a ```json ... ``` block. The output should be a plain JSON object.
+
 ---
 
 Example Cases:  

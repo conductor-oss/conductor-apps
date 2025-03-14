@@ -16,7 +16,7 @@ To get the Conductor developer account key:
 3. Create a new application key and secret.
 4. Set the environment variables:
     ```shell
-    export CONDUCTOR_SERVER_URL=https://developer.orkescloud.com/api;
+    export CONDUCTOR_SERVER_URL=https://developer.orkescloud.com/api
     export CONDUCTOR_AUTH_KEY=<<YOUR_CONDUCTOR_AUTH_KEY>>
     export CONDUCTOR_AUTH_SECRET=<<YOUR_CONDUCTOR_AUTH_SECRET>>
     ```
@@ -36,8 +36,18 @@ To get your OpenAI API key:
 ---
 
 ### 3. Get Google Authentication Credentials
-To set up Google authentication:
+To set up Google authentication, you can either set up a service account (works on both local & prod) or configure a standard google api (local only):
 
+**Local & Prod:**
+1. Follow the [Google API Quickstart Tutorial](https://cloud.google.com/iam/docs/service-accounts-create#iam-service-accounts-create-console).
+2. Click Manage Keys and create a key and download the resulting `project-name.json`
+3. Json stringify the json contained in `project-name.json` by using this tool [JSON Stringify Online](https://jsonformatter.org/json-stringify-online)
+4. Set the environment variable:
+    ```shell
+    export GOOGLE_SERVICE_ACCOUNT_JSON=<<YOUR_GOOGLE_SERVICE_ACCOUNT_JSON>>
+    ```
+
+**Local only**
 1. Follow the [Google API Quickstart Tutorial](https://developers.google.com/drive/api/quickstart/python).
 2. Set up your environment and a Google Cloud project.
 3. Configure the OAuth consent screen.
@@ -63,15 +73,21 @@ To get your SendGrid API key:
 ### Backend Server & Workflow
 To run the backend server and workflow:
 
-1. Set the Python path:
+1. Set the Python path and environment type (for Google API, set 'dev' or 'prod'):
     ```shell
     export PYTHONPATH=/[PATH_TO_REPO]/conductor-apps/python/interview_agentic_app
+    export ENV=dev
     ```
-2. Install required packages:
+2. Create a python virtual env
+    ```shell
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
+3. Install required packages:
     ```shell
     pip3 install -r requirements.txt
     ```
-3. Run the backend server:
+4. Run the backend server:
     ```shell
     cd workflow
     python app.py
