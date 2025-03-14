@@ -1,7 +1,4 @@
 import json
-import sys
-from conductor.client.automator.task_handler import TaskHandler
-from conductor.client.configuration.configuration import Configuration
 from conductor.client.worker.worker_task import worker_task
 import os
 
