@@ -16,10 +16,6 @@ import io
 
 from datetime import datetime
 
-# os.environ['CONDUCTOR_SERVER_URL'] = 'http://localhost:5001/api'
-# os.environ['CONDUCTOR_AUTH_KEY'] = 'AccessKeyId2'
-# os.environ['CONDUCTOR_AUTH_SECRET'] = 'AccessKeySecret2'
-
 # If modifying these scopes, delete the file token.json.
 SCOPES = ["https://www.googleapis.com/auth/drive", "https://www.googleapis.com/auth/documents"]
 
@@ -31,46 +27,21 @@ def get_credentials():
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            # client_secrets = {
-            #     "installed": {
-            #         "client_id": os.getenv("CLIENT_ID"),
-            #         "client_secret": os.getenv("CLIENT_SECRET"),
-            #         "redirect_uris": [os.getenv("REDIRECT_URI")],
-            #         "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-            #         "token_uri": "https://oauth2.googleapis.com/token"
-            #     }
-            # }
-            # flow = InstalledAppFlow.from_client_config(client_secrets, SCOPES)
-            # creds = flow.run_console() #flow.run_local_server(port=0)
-            # Use Service Account credentials for server-to-server communication
-            sys.stderr.write("SERVICE ACCOUNT INFO\n")
-            sys.stderr.write(f"DEBUG: OG-creds data type = {type(os.getenv('GOOGLE_SERVICE_ACCOUNT_JSON'))}, value = {os.getenv('GOOGLE_SERVICE_ACCOUNT_JSON')}\n")
-            sys.stderr.write("\n=====================\n")
-            service_account_info = json.loads(json.loads(os.getenv('GOOGLE_SERVICE_ACCOUNT_JSON')))
-            # print(service_account_info)
-            sys.stderr.write(f"DEBUG: creds data type = {type(service_account_info)}, value = {service_account_info}\n")
-            sys.stderr.flush()
-            
-            creds = service_account.Credentials.from_service_account_info(
-                service_account_info,
-                scopes=SCOPES)
-            #print(creds.to_json())
-            #with open("token.json", "w") as token:
-            #    json.dump(creds, token)
+            # dev vs prod interaction w/ Google API
+            if os.getenv('ENV') == 'prod':
+                # In production, use the service account JSON from the environment variable
+                service_account_info = json.loads(json.loads(os.getenv('GOOGLE_SERVICE_ACCOUNT_JSON')))
+                creds = service_account.Credentials.from_service_account_info(
+                    service_account_info,
+                    scopes=SCOPES)
+            else:
+                flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
+                creds = flow.run_local_server(port=0)
+                with open("token.json", "w") as token:
+                    token.write(creds.to_json())
     return creds
 
 def upload_text_to_drive_as_doc(text, filename, creds):
-    # creds = None
-    # if os.path.exists("token.json"):
-    #     creds = Credentials.from_authorized_user_file("token.json", SCOPES)
-    # if not creds or not creds.valid:
-    #     if creds and creds.expired and creds.refresh_token:
-    #         creds.refresh(Request())
-    #     else:
-    #         flow = InstalledAppFlow.from_client_secrets_file("credentials.json", SCOPES)
-    #         creds = flow.run_local_server(port=0)
-    #     with open("token.json", "w") as token:
-    #         token.write(creds.to_json())
     try:
         service = build("drive", "v3", credentials=creds)
         file_metadata = {
@@ -101,7 +72,7 @@ def upload_text_to_drive_as_doc(text, filename, creds):
 
 def apply_google_docs_formatting(doc_id, formatted_text, creds):
     try:
-        service = build("docs", "v1", credentials=creds) #Credentials.from_authorized_user_file("token.json", SCOPES))
+        service = build("docs", "v1", credentials=creds)
 
         requests = []
 
