@@ -33,7 +33,8 @@
         "interview_status": "\"\"",
         "follow_up": "\"\"",
         "start_time": "${get_start_time_ref.output.result}",
-        "isInitialStepDone": false
+        "is_initial_step_done": false,
+        "is_final_step_done": false
       },
       "type": "SET_VARIABLE",
       "decisionCases": {},
@@ -92,7 +93,7 @@
       "name": "do_while_1",
       "taskReferenceName": "do_while_ref_1",
       "inputParameters": {
-        "isInitialStepDone": "${workflow.variables.isInitialStepDone}"
+        "is_initial_step_done": "${workflow.variables.is_initial_step_done}"
       },
       "type": "DO_WHILE",
       "decisionCases": {},
@@ -103,7 +104,7 @@
       "optional": false,
       "defaultExclusiveJoinTask": [],
       "asyncComplete": false,
-      "loopCondition": "(function () {\n  return !$.isInitialStepDone;\n})();",
+      "loopCondition": "(function () {\n  return !$.is_initial_step_done;\n})();",
       "loopOver": [
         {
           "name": "initial_response",
@@ -150,11 +151,11 @@
           "name": "concatenate_name_lang_msg",
           "taskReferenceName": "concatenate_name_lang_msg_ref",
           "inputParameters": {
-            "expression": "(function () {\n  return {\n    messages: [\n      ...($.messages || []),\n      {\n        role: \"user\",\n        message: $.initialResponse,\n        timestamp: new Date().toISOString()\n      },\n      ...(!$.isInitialStepDone ? [{\n        role: \"assistant\",\n        message: \"You are missing your name or programming language. Please provide both to proceed.\",\n        timestamp: new Date().toISOString()\n      }] : [])\n    ]\n  };\n})();\n",
+            "expression": "(function () {\n  return {\n    messages: [\n      ...($.messages || []),\n      {\n        role: \"user\",\n        message: $.initialResponse,\n        timestamp: new Date().toISOString()\n      },\n      ...(!$.is_initial_step_done ? [{\n        role: \"assistant\",\n        message: \"You are missing your name or programming language. Please provide both to proceed.\",\n        timestamp: new Date().toISOString()\n      }] : [])\n    ]\n  };\n})();\n",
             "evaluatorType": "graaljs",
             "messages": "${workflow.variables.messages}",
             "initialResponse": "${initial_response_ref.output.result.response}",
-            "isInitialStepDone": "${name_question_evaluator_ref.output.result.isInitialStepDone}"
+            "is_initial_step_done": "${name_question_evaluator_ref.output.result.is_initial_step_done}"
           },
           "type": "INLINE",
           "decisionCases": {},
@@ -173,7 +174,7 @@
           "name": "set_variable_8",
           "taskReferenceName": "set_variable_ref_8",
           "inputParameters": {
-            "isInitialStepDone": "${name_question_evaluator_ref.output.result.isInitialStepDone}",
+            "is_initial_step_done": "${name_question_evaluator_ref.output.result.is_initial_step_done}",
             "name": "${name_question_evaluator_ref.output.result.name}",
             "language": "${name_question_evaluator_ref.output.result.language}",
             "messages": "${concatenate_name_lang_msg_ref.output.result.messages}"
@@ -402,6 +403,27 @@
             "messages": "${workflow.variables.messages}"
           },
           "type": "LLM_CHAT_COMPLETE",
+          "decisionCases": {},
+          "defaultCase": [],
+          "forkTasks": [],
+          "startDelay": 0,
+          "joinOn": [],
+          "optional": false,
+          "defaultExclusiveJoinTask": [],
+          "asyncComplete": false,
+          "loopOver": [],
+          "onStateChange": {},
+          "permissive": false
+        },
+        {
+          "name": "clean_evaluation_response",
+          "taskReferenceName": "clean_evaluation_response_ref",
+          "inputParameters": {
+            "expression": "(function () {\n  function cleanString(str) {\n    return str.replace(/(\\*\\*|\\*|__|_)/g, '').trim().toUpperCase();\n  }\n  \n  return cleanString($.evaluator_response);\n})();",
+            "evaluatorType": "graaljs",
+            "evaluator_response": "${evaluator_response_ref.output.result}"
+          },
+          "type": "INLINE",
           "decisionCases": {},
           "defaultCase": [],
           "forkTasks": [],
@@ -901,13 +923,24 @@
       "defaultCase": [],
       "forkTasks": [],
       "startDelay": 0,
-      "joinOn": [],
+      "joinOn": [
+        "send_thank_you_email_ref",
+        "storeInterviewTranscript_ref"
+      ],
       "optional": false,
       "defaultExclusiveJoinTask": [],
       "asyncComplete": false,
       "loopOver": [],
       "onStateChange": {},
       "permissive": false
+    },
+    {
+      "name": "set_variable_11",
+      "taskReferenceName": "set_variable_ref_11",
+      "type": "SET_VARIABLE",
+      "inputParameters": {
+        "is_final_step_done": true
+      }
     }
   ],
   "inputParameters": [],
